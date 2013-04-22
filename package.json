@@ -37,13 +37,13 @@
     , "IsEmpty": "./components/IsEmpty.coffee"
     , "IsEqual": "./components/IsEqual.coffee"
     , "HasGroup": "./components/HasGroup.coffee"
-    , "Wait": "./components/Wait.coffee"
+    , "Cache": "./components/Cache.coffee"
     , "CountDown": "./components/CountDown.coffee"
     }
   , "graphs":
-    { "Reorder": "./graphs/Reorder.coffee"
-    , "Cache": "./graphs/Cache.coffee"
-    , "Session": "./graphs/Session.coffee"
+    { "Reorder": "./graphs/Reorder.fbp"
+    , "Wait": "./graphs/Wait.fbp"
+    , "Session": "./graphs/Session.fbp"
     }
   }
 , "scripts":

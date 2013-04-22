@@ -2,7 +2,7 @@ noflo = require("noflo")
 _ = require("underscore")
 _s = require("underscore.string")
 
-class Wait extends noflo.Component
+class Cache extends noflo.Component
 
   description: _s.clean "save incoming IPs and send the saved IPs to
   port 'out' upon any data IP from 'ready'"
@@ -15,55 +15,55 @@ class Wait extends noflo.Component
       out: new noflo.Port
 
     @inPorts.ready.on "disconnect", =>
-      @emitWait(@groupWait, @dataWait)
+      @emitCache(@groupCache, @dataCache)
       @outPorts.out.disconnect()
 
     @inPorts.in.on "connect", =>
       @groups = []
-      @groupWait = {}
-      @dataWait = []
+      @groupCache = {}
+      @dataCache = []
 
     @inPorts.in.on "begingroup", (group) =>
-      { groupWait, dataWait } = @locate()
+      { groupCache, dataCache } = @locate()
 
-      groupWait[group] = {}
-      dataWait[group] = []
+      groupCache[group] = {}
+      dataCache[group] = []
 
       @groups.push(group)
 
     @inPorts.in.on "data", (data) =>
-      { dataWait } = @locate()
+      { dataCache } = @locate()
 
-      dataWait.push(data)
+      dataCache.push(data)
 
     @inPorts.in.on "endgroup", (group) =>
       @groups.pop()
 
   locate: ->
-    groupWait = @groupWait
-    dataWait = @dataWait
+    groupCache = @groupCache
+    dataCache = @dataCache
 
     for group in @groups
-      groupWait = groupWait[group]
-      dataWait = dataWait[group]
+      groupCache = groupCache[group]
+      dataCache = dataCache[group]
 
-    groupWait: groupWait
-    dataWait: dataWait
+    groupCache: groupCache
+    dataCache: dataCache
 
-  emitWait: (groupWait, dataWait) ->
+  emitCache: (groupCache, dataCache) ->
     # Send out the data
-    @outPorts.out.send(data) for data in dataWait
+    @outPorts.out.send(data) for data in dataCache
 
     # Just send the data out and call it a round without groups
-    return if _.isEmpty(groupWait)
+    return if _.isEmpty(groupCache)
 
     # Go through everything
-    for group in _.keys(groupWait)
-      subGroupWait = groupWait[group]
-      subDataWait = dataWait[group]
+    for group in _.keys(groupCache)
+      subGroupCache = groupCache[group]
+      subDataCache = dataCache[group]
 
       @outPorts.out.beginGroup(group)
-      @emitWait(subGroupWait, subDataWait)
+      @emitCache(subGroupCache, subDataCache)
       @outPorts.out.endGroup()
 
-exports.getComponent = -> new Wait
+exports.getComponent = -> new Cache

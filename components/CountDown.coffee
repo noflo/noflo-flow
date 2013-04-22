@@ -3,10 +3,11 @@ _s = require("underscore.string")
 
 class CountDown extends noflo.Component
 
-  description: _s.clean "count down from particular number and send an empty IP
-  when it hits 0"
+  description: _s.clean "count down from particular number, by default 1, and
+    send an empty IP when it hits 0"
 
   constructor: ->
+    @default = @count = 1
     @repeat = true
 
     @inPorts =
@@ -18,14 +19,12 @@ class CountDown extends noflo.Component
       count: new noflo.Port
 
     @inPorts.count.on "data", (@count) =>
-      console.log("* B: #{@count}")
       @default = @count
 
     @inPorts.repeat.on "data", (@repeat) =>
       @default = null unless @repeat
 
     @inPorts.in.on "disconnect", =>
-      console.log("* A: #{@count}")
       if --@count is 0
         @outPorts.out.send(null)
         @outPorts.out.disconnect()

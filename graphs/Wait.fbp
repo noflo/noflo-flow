@@ -1,0 +1,8 @@
+EXPORT=CACHE.IN:IN
+EXPORT=CACHE.OUT:OUT
+EXPORT=SPLITINPUT.IN:READY
+EXPORT=COUNTDOWN.COUNT:COUNT
+
+SplitInput(Split) OUT -> READY Cache(Cache)
+# Invalidate cache after a certain count of connections, by default 1
+SplitInput() OUT -> IN CountDown(CountDown) OUT -> IN Cache()
