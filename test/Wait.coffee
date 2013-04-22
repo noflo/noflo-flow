@@ -1,7 +1,7 @@
 test = require "noflo-test"
 
-test.component("flow/Cache").
-  discuss("cache somethings").
+test.component("flow/Wait").
+  discuss("save somethings").
     send.connect("in").
       send.beginGroup("in", "a").
         send.data("in", "b").
