@@ -7,7 +7,7 @@
   , "utilities"
   ]
 , "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.3"
+, "version": "0.0.4"
 , "licenses":
   [ { "type": "MIT"
     , "url": "https://github.com/kenhkan/noflo-flow/blob/master/LICENSE.md"
@@ -30,6 +30,7 @@
   , "coffee-script": "1.6.x"
   , "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/develop"
   }
+, "main": "./lib/main"
 , "noflo":
   { "components":
     { "Accept": "./components/Accept.coffee"

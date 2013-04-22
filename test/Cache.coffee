@@ -39,8 +39,8 @@ test.component("flow/Cache").
     send.data("in", "value of b").
     send.disconnect("in").
   discuss("signal the cache to be released by the key").
-    send.connect("ready").
-      send.data("ready", "a").
+    send.data("key", "a").
+    send.data("ready", null).
     send.disconnect("ready").
   discuss("get back the cache by the key").
     receive.data("out", "value of a").
@@ -56,8 +56,8 @@ test.component("flow/Cache").
     send.data("in", "value of b").
     send.disconnect("in").
   discuss("signal the cache to be released by the key").
-    send.connect("ready").
-      send.data("ready", "a").
+    send.data("key", "a").
+    send.data("ready", null).
     send.disconnect("ready").
   discuss("'a' should not be present because of cache size limit").
     receive.data("out", null).
