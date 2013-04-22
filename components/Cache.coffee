@@ -8,7 +8,7 @@ class Cache extends noflo.Component
   port 'out' upon any data IP from 'ready'"
 
   constructor: ->
-    @size = 1000000
+    @size = +Infinity
     @cache = {}
     @journal = []
 
