@@ -8,15 +8,34 @@ class Cache extends noflo.Component
   port 'out' upon any data IP from 'ready'"
 
   constructor: ->
+    @size = 1000000
+    @cache = {}
+    @journal = []
+
     @inPorts =
       in: new noflo.Port
       ready: new noflo.Port
+      key: new noflo.Port
+      size: new noflo.Port
     @outPorts =
       out: new noflo.Port
+
+    @inPorts.key.on "data", (@key) =>
+
+    @inPorts.size.on "data", (@size) =>
+
+    @inPorts.ready.on "data", (@key) =>
+      if @key? and @cache[@key]?
+        @groupCache = @cache[@key].groups
+        @dataCache = @cache[@key].data
 
     @inPorts.ready.on "disconnect", =>
       @emitCache(@groupCache, @dataCache)
       @outPorts.out.disconnect()
+
+      # Remove cache
+      delete @cache[@key]
+      @key = null
 
     @inPorts.in.on "connect", =>
       @groups = []
@@ -38,6 +57,17 @@ class Cache extends noflo.Component
 
     @inPorts.in.on "endgroup", (group) =>
       @groups.pop()
+
+    @inPorts.in.on "disconnect", =>
+      if @key?
+        @cache[@key] =
+          groups: @groupCache
+          data: @dataCache
+
+        # Record the new cache and remove old if limit is reached
+        @journal.push(@key)
+        @journal.unshift() if @journal.length > @size
+        @key = null
 
   locate: ->
     groupCache = @groupCache

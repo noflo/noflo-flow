@@ -3,6 +3,7 @@ EXPORT=CACHE.OUT:OUTRIGHT
 EXPORT=SPLITINPUT.IN:INRIGHT
 EXPORT=SPLITINPUT.OUT:OUTLEFT
 
+# Left must come in before right as left is cached
 SplitInput(Split) OUT -> READY Cache(Cache)
 # Invalidate cache after a certain count of connections, by default 1
 SplitInput() OUT -> IN CountDown(CountDown) OUT -> IN Cache()
