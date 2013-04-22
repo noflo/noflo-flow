@@ -1,6 +1,6 @@
 noflo = require "noflo"
 _s = require "underscore.string"
-CacheStorage = require "../lib/cache_storage"
+{ CacheStorage } = require "../lib/cache_storage"
 
 class Cache extends noflo.Component
 
@@ -25,7 +25,7 @@ class Cache extends noflo.Component
       @cache.size = size
 
     @inPorts.ready.on "data", (data) =>
-      @cache.flushCache @key, @outPorts.out
+      @cache.flushCache @outPorts.out, @key
       @outPorts.out.disconnect()
       delete @cache[@key]
 

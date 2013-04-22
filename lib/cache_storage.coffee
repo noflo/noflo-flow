@@ -50,12 +50,12 @@ class CacheStorage
     groupCache: groupCache
     dataCache: dataCache
 
-  flushCache: (key, port) ->
+  flushCache: (port, key) ->
     { groupCache, dataCache } = @cache[key] or
       throw new Error("No cache with key #{key} to flush")
-    @flush(groupCache, dataCache, port)
+    @flush(port, groupCache, dataCache)
 
-  flush: (groupCache, dataCache, port) ->
+  flush: (port, groupCache, dataCache) ->
     # Send out the data
     port.send(data) for data in dataCache
 
@@ -68,7 +68,7 @@ class CacheStorage
       subDataCache = dataCache[group]
 
       port.beginGroup(group)
-      @flush(subGroupCache, subDataCache, port)
+      @flush(port, subGroupCache, subDataCache)
       port.endGroup()
 
 exports.CacheStorage = CacheStorage
