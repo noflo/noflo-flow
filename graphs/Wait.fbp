@@ -1,8 +1,5 @@
-EXPORT=CACHE.IN:IN
-EXPORT=CACHE.OUT:OUT
-EXPORT=SPLITINPUT.IN:READY
-EXPORT=COUNTDOWN.COUNT:COUNT
+EXPORT=REORDER.INLEFT:IN
+EXPORT=REORDER.OUTRIGHT:OUT
+EXPORT=REORDER.INRIGHT:READY
 
-SplitInput(Split) OUT -> READY Cache(Cache)
-# Invalidate cache after a certain count of connections, by default 1
-SplitInput() OUT -> IN CountDown(CountDown) OUT -> IN Cache()
+Reorder(Reorder)
