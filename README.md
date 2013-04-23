@@ -6,3 +6,6 @@ This package provides utility components to control the flow within a
 
 It qualifies as a flow control component if it allows partial data to go
 to one out port versus another (or not at all).
+
+Feel free to contribute new components and graphs! I'll try to
+incorporate as soon as time allows.
