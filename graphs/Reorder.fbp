@@ -1,9 +1,10 @@
-EXPORT=CACHE.IN:INLEFT
-EXPORT=CACHE.OUT:OUTRIGHT
-EXPORT=SPLITINPUT.IN:INRIGHT
-EXPORT=SPLITINPUT.OUT:OUTLEFT
+EXPORT=INLEFT.IN:LEFTIN
+EXPORT=CACHE.OUT:LEFTOUT
+EXPORT=MERGEINPUT.IN:RIGHTIN
+EXPORT=SPLITINPUT.OUT:RIGHTOUT
 
 # Left must come in before right as left is cached
-SplitInput(Split) OUT -> READY Cache(flow/Cache)
+MergeInput(Merge) OUT -> IN SplitInput(Split) OUT -> READY Cache(flow/Cache)
+
 # Invalidate cache after a certain count of connections, by default 1
-SplitInput() OUT -> IN CountDown(flow/CountDown) OUT -> IN Cache()
+SplitInput() OUT -> IN CountDown(flow/CountDown) OUT -> IN InLeft(Merge) OUT -> IN Cache()
