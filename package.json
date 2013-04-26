@@ -29,8 +29,9 @@
   { "coffeelint": "*"
   , "coffee-script": "1.6.x"
   , "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/master"
+  , "nodeunit": ">=0.6.0"
   }
-, "main": "./lib/main"
+, "main": "./lib/main.coffee"
 , "noflo":
   { "components":
     { "Accept": "./components/Accept.coffee"
@@ -48,6 +49,6 @@
   }
 , "scripts":
   { "pretest": "./node_modules/.bin/coffeelint -r components"
-  , "test": "./node_modules/.bin/noflo-test --spec test/*.coffee"
+  , "test": "./node_modules/.bin/noflo-test --spec test/*.coffee; ./node_modules/.bin/nodeunit test/nodeunit/*.coffee"
   }
 }

@@ -9,13 +9,13 @@ class CacheStorage
     # An array of stored cache by time of creation
     @journal = []
 
-  connect: (key) ->
+  connect: (key = null) ->
     @cache[key] =
       groupCache: {}
       dataCache: []
     @groups = []
 
-  beginGroup: (group, key) ->
+  beginGroup: (group, key = null) ->
     { groupCache, dataCache } = @locate(key)
 
     groupCache[group] = {}
@@ -23,15 +23,15 @@ class CacheStorage
 
     @groups.push(group)
 
-  data: (data, key) ->
+  data: (data, key = null) ->
     { dataCache } = @locate(key)
 
     dataCache.push(data)
 
-  endGroup: (group, key) ->
+  endGroup: (key = null) ->
     @groups.pop()
 
-  disconnect: (key) ->
+  disconnect: (key = null) ->
     if key?
       @cache[key] = @locate(key)
 
@@ -39,7 +39,7 @@ class CacheStorage
       @journal.push(key)
       @journal.unshift() if @journal.length > @size
 
-  locate: (key) ->
+  locate: (key = null) ->
     { groupCache, dataCache } = @cache[key] or
       throw new Error("No cache with key #{key} to locate")
 
@@ -50,14 +50,17 @@ class CacheStorage
     groupCache: groupCache
     dataCache: dataCache
 
-  flushCache: (port, key) ->
+  # Flush given a NoFlo port, a key of a particular cache object, and the index
+  # of the port to send
+  flushCache: (port, key, index) ->
     { groupCache, dataCache } = @cache[key] or
       throw new Error("No cache with key #{key} to flush")
-    @flush(port, groupCache, dataCache)
+    @flush(port, index, groupCache, dataCache)
+    delete @cache[@key]
 
-  flush: (port, groupCache, dataCache) ->
+  flush: (port, index, groupCache, dataCache) ->
     # Send out the data
-    port.send(data) for data in dataCache
+    port.send(data, index) for data in dataCache
 
     # Just send the data out and call it a round without groups
     return if _.isEmpty(groupCache)
@@ -67,8 +70,8 @@ class CacheStorage
       subGroupCache = groupCache[group]
       subDataCache = dataCache[group]
 
-      port.beginGroup(group)
-      @flush(port, subGroupCache, subDataCache)
-      port.endGroup()
+      port.beginGroup(group, index)
+      @flush(port, index, subGroupCache, subDataCache)
+      port.endGroup(index)
 
 exports.CacheStorage = CacheStorage

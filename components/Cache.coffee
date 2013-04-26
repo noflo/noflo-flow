@@ -40,7 +40,7 @@ class Cache extends noflo.Component
       @cache.data(data, @key)
 
     @inPorts.in.on "endgroup", (group) =>
-      @cache.endGroup(group, @key)
+      @cache.endGroup(@key)
 
     @inPorts.in.on "disconnect", =>
       @cache.disconnect(@key)
