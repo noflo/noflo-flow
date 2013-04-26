@@ -24,6 +24,7 @@
   { "noflo": "0.3.x"
   , "underscore": "1.4.x"
   , "underscore.string": "2.3.x"
+  , "noflo-swiss": "0.0.x"
   }
 , "devDependencies":
   { "coffeelint": "*"
@@ -36,15 +37,16 @@
   { "components":
     { "Accept": "./components/Accept.coffee"
     , "Deny": "./components/Deny.coffee"
-    , "IsEmpty": "./components/IsEmpty.coffee"
     , "IsEqual": "./components/IsEqual.coffee"
     , "HasGroup": "./components/HasGroup.coffee"
     , "Cache": "./components/Cache.coffee"
     , "CountDown": "./components/CountDown.coffee"
+    , "Fork": "./components/Fork.coffee"
     }
   , "graphs":
     { "Reorder": "./graphs/Reorder.fbp"
     , "Wait": "./graphs/Wait.fbp"
+    , "IsEmpty": "./graphs/IsEmpty.fbp"
     }
   }
 , "scripts":

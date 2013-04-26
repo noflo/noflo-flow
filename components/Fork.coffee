@@ -20,7 +20,8 @@ class Fork extends noflo.Component
       out: new noflo.ArrayPort
 
     @inPorts.port.on "data", (portIndex) =>
-      @portIndex = portIndex if _.isNumber portIndex
+      portIndex = parseInt portIndex
+      @portIndex = portIndex if _.isNumber portIndex and not isNaN portIndex
 
     @inPorts.port.on "disconnect", =>
       @cache.flushCache @outPorts.out, null, @portIndex
