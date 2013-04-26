@@ -14,7 +14,7 @@ class Cache extends noflo.Component
     @inPorts =
       in: new noflo.Port
       ready: new noflo.Port
-      key: new noflo.Port
+      key: new noflo.ArrayPort
       size: new noflo.Port
     @outPorts =
       out: new noflo.Port
