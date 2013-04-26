@@ -24,12 +24,10 @@ class Cache extends noflo.Component
     @inPorts.size.on "data", (size) =>
       @cache.size = size
 
-    @inPorts.ready.on "data", (data) =>
+    @inPorts.ready.on "disconnect", =>
       @cache.flushCache @outPorts.out, @key
       @outPorts.out.disconnect()
       delete @cache[@key]
-
-    @inPorts.ready.on "disconnect", =>
       @key = null
 
     @inPorts.in.on "connect", =>
