@@ -37,7 +37,6 @@
   { "components":
     { "Accept": "./components/Accept.coffee"
     , "Deny": "./components/Deny.coffee"
-    , "IsEqual": "./components/IsEqual.coffee"
     , "HasGroup": "./components/HasGroup.coffee"
     , "Cache": "./components/Cache.coffee"
     , "CountDown": "./components/CountDown.coffee"
@@ -46,7 +45,9 @@
   , "graphs":
     { "Reorder": "./graphs/Reorder.fbp"
     , "Wait": "./graphs/Wait.fbp"
+    , "Escrow": "./graphs/Escrow.fbp"
     , "IsEmpty": "./graphs/IsEmpty.fbp"
+    , "IsEqual": "./graphs/IsEqual.fbp"
     }
   }
 , "scripts":

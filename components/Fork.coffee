@@ -21,7 +21,7 @@ class Fork extends noflo.Component
 
     @inPorts.port.on "data", (portIndex) =>
       portIndex = parseInt portIndex
-      @portIndex = portIndex if _.isNumber portIndex and not isNaN portIndex
+      @portIndex = portIndex if _.isNumber(portIndex) and not isNaN(portIndex)
 
     @inPorts.port.on "disconnect", =>
       @cache.flushCache @outPorts.out, null, @portIndex
