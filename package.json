@@ -40,6 +40,7 @@
     , "HasGroup": "./components/HasGroup.coffee"
     , "Cache": "./components/Cache.coffee"
     , "CountDown": "./components/CountDown.coffee"
+    , "CountedMerge": "./components/CountedMerge.coffee"
     , "Fork": "./components/Fork.coffee"
     }
   , "graphs":
