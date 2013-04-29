@@ -50,13 +50,26 @@ class CacheStorage
     groupCache: groupCache
     dataCache: dataCache
 
+  reset: (key = null) ->
+    if key?
+      delete @cache[key]
+    else
+      @cache = {}
+
   # Flush given a NoFlo port, a key of a particular cache object, and the index
   # of the port to send
   flushCache: (port, key, index) ->
-    { groupCache, dataCache } = @cache[key] or
-      throw new Error("No cache with key #{key} to flush")
-    @flush(port, index, groupCache, dataCache)
-    delete @cache[@key]
+    return false unless @cache[key]
+    { groupCache, dataCache } = @cache[key]
+    @flush port, index, groupCache, dataCache
+    true
+
+  # Flush all cache objects
+  flushAll: (port, index) ->
+    for key, cache of @cache
+      { groupCache, dataCache } = cache
+      @flush(port, index, groupCache, dataCache)
+    true
 
   flush: (port, index, groupCache, dataCache) ->
     # Send out the data

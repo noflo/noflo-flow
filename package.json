@@ -42,6 +42,7 @@
     , "CountDown": "./components/CountDown.coffee"
     , "CountedMerge": "./components/CountedMerge.coffee"
     , "Fork": "./components/Fork.coffee"
+    , "Stop": "./components/Stop.coffee"
     }
   , "graphs":
     { "Reorder": "./graphs/Reorder.fbp"
@@ -49,6 +50,7 @@
     , "Escrow": "./graphs/Escrow.fbp"
     , "IsEmpty": "./graphs/IsEmpty.fbp"
     , "IsEqual": "./graphs/IsEqual.fbp"
+    , "GroupCache": "./graphs/GroupCache.fbp"
     }
   }
 , "scripts":

@@ -1,0 +1,12 @@
+EXPORT=INPUT.IN:IN
+EXPORT=CACHE.OUT:OUT
+EXPORT=CACHE.FLUSH:READY
+
+'true' -> KEEP Cache(flow/Cache)
+
+Input(swiss/Hub) OUT -> IN ReadGroup(groups/Read) OUT -> IN Group(Split)
+
+Group() OUT -> KEY Cache()
+Group() OUT -> GROUP Regroup(groups/Group) OUT -> IN Cache()
+Group() OUT -> REGEXP Filter(groups/FilterByGroup)
+Input() OUT -> IN Filter() OUT -> IN Regroup()

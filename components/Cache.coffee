@@ -8,26 +8,38 @@ class Cache extends noflo.Component
   port 'out' upon any data IP from 'ready'"
 
   constructor: ->
+    @keep = false
     @key = null
     @cache = new CacheStorage
 
     @inPorts =
-      in: new noflo.Port
+      in: new noflo.ArrayPort
       ready: new noflo.Port
+      flush: new noflo.Port
       key: new noflo.ArrayPort
       size: new noflo.Port
+      keep: new noflo.Port
     @outPorts =
       out: new noflo.Port
 
     @inPorts.key.on "data", (@key) =>
 
+    @inPorts.keep.on "data", (keep) =>
+      @keep = keep is "true"
+
     @inPorts.size.on "data", (size) =>
       @cache.size = size
+
+    @inPorts.flush.on "disconnect", =>
+      @cache.flushAll @outPorts.out
+      @outPorts.out.disconnect()
+      @cache.reset() unless @keep
+      @key = null
 
     @inPorts.ready.on "disconnect", =>
       @cache.flushCache @outPorts.out, @key
       @outPorts.out.disconnect()
-      delete @cache[@key]
+      @cache.reset @key unless @keep
       @key = null
 
     @inPorts.in.on "connect", =>
