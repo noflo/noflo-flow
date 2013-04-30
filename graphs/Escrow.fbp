@@ -3,4 +3,4 @@ EXPORT=MATCHES.IN:SIGNAL
 EXPORT=FORK.OUT:OUT
 EXPORT=HASHTOOBJECT.IN:MATCHES
 
-HashToObject(swiss/HashToObject) OUT -> MATCH Matches(strings/MatchReplace) OUT -> PORT Fork(flow/Fork)
+HashToObject(adapters/HashToObject) OUT -> MATCH Matches(strings/MatchReplace) OUT -> PORT Fork(flow/Fork)
