@@ -26,6 +26,8 @@
   , "underscore.string": "2.3.x"
   , "noflo-swiss": "0.0.x"
   , "noflo-groups": "0.0.x"
+  , "noflo-adapters": "0.0.x"
+  , "noflo-strings": "0.0.x"
   }
 , "devDependencies":
   { "coffeelint": "*"
