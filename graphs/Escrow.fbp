@@ -1,6 +1,6 @@
 EXPORT=FORK.IN:IN
 EXPORT=MATCHES.IN:SIGNAL
 EXPORT=FORK.OUT:OUT
-EXPORT=HASHTOOBJECT.IN:MATCHES
+EXPORT=PROPSTRINGTOOBJECT.IN:MATCHES
 
-HashToObject(adapters/HashToObject) OUT -> MATCH Matches(strings/MatchReplace) OUT -> PORT Fork(flow/Fork)
+PropStringToObject(adapters/PropStringToObject) OUT -> MATCH Matches(strings/MatchReplace) OUT -> PORT Fork(flow/Fork)
