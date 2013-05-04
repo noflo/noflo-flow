@@ -37,7 +37,7 @@ class Split extends noflo.Component
   flush: ->
     for index in [0...@outPorts.out.sockets.length]
       @cache.flushCache @outPorts.out, null, index
+      @outPorts.out.disconnect index
     @cache.reset()
-    @outPorts.out.disconnect()
 
 exports.getComponent = -> new Split
