@@ -60,6 +60,10 @@ class CacheStorage
   getCacheKeys: ->
     _.keys @cache
 
+  # Does the cache exist?
+  isCacheValid: (key = null) ->
+    not _.isEmpty @cache[key]
+
   # Flush given a NoFlo port, a key of a particular cache object, and the index
   # of the port to send
   flushCache: (port, key = null, index = null) ->
