@@ -31,11 +31,12 @@ class Split extends noflo.Component
       @cache.endGroup()
 
     @inPorts.in.on "disconnect", =>
-      @flush()
       @cache.disconnect()
+      @flush()
 
   flush: ->
     for index in [0...@outPorts.out.sockets.length]
+      @outPorts.out.connect index
       @cache.flushCache @outPorts.out, null, index
       @outPorts.out.disconnect index
     @cache.reset()

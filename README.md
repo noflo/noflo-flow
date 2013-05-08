@@ -9,3 +9,9 @@ to one out port versus another (or not at all).
 
 Feel free to contribute new components and graphs! I'll try to
 incorporate as soon as time allows.
+
+
+TODO
+-------------------------------
+
+Document components

@@ -47,11 +47,11 @@
     , "Fork": "./components/Fork.coffee"
     , "Stop": "./components/Stop.coffee"
     , "Split": "./components/Split.coffee"
+    , "ReverseSplit": "./components/ReverseSplit.coffee"
+    , "Reorder": "./components/Reorder.coffee"
     }
   , "graphs":
-    { "Reorder": "./graphs/Reorder.fbp"
-    , "Wait": "./graphs/Wait.fbp"
-    , "Escrow": "./graphs/Escrow.fbp"
+    { "Escrow": "./graphs/Escrow.fbp"
     , "IsEmpty": "./graphs/IsEmpty.fbp"
     , "IsEqual": "./graphs/IsEqual.fbp"
     , "GroupCache": "./graphs/GroupCache.fbp"

@@ -67,7 +67,7 @@ class CacheStorage
   # Flush given a NoFlo port, a key of a particular cache object, and the index
   # of the port to send
   flushCache: (port, key = null, index = null) ->
-    return false unless @cache[key]
+    return false unless @cache[key]?
     { groupCache, dataCache } = @cache[key]
     @flush port, index, groupCache, dataCache
     true
