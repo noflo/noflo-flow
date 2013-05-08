@@ -49,7 +49,7 @@ class Cache extends noflo.Component
       @cache.beginGroup(group, @key)
 
     @inPorts.in.on "data", (data) =>
-      @cache.data(data, @key)
+      @cache.send(data, @key)
 
     @inPorts.in.on "endgroup", (group) =>
       @cache.endGroup(@key)

@@ -23,7 +23,7 @@ class CacheStorage
 
     @groups.push(group)
 
-  data: (data, key = null) ->
+  send: (data, key = null) ->
     { dataCache } = @locate(key)
 
     dataCache.push(data)

@@ -29,7 +29,7 @@ class Reorder extends noflo.Component
       @cache.beginGroup group, @socIndex
 
     @inPorts.in.on "data", (data) =>
-      @cache.data data, @socIndex
+      @cache.send data, @socIndex
 
     @inPorts.in.on "endgroup", (group) =>
       @cache.endGroup @socIndex

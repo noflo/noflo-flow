@@ -35,7 +35,7 @@ class Fork extends noflo.Component
       @cache.beginGroup(group)
 
     @inPorts.in.on "data", (data) =>
-      @cache.data(data)
+      @cache.send(data)
 
     @inPorts.in.on "endgroup", (group) =>
       @cache.endGroup()

@@ -27,7 +27,7 @@ class CountedMerge extends noflo.Component
       @cache.beginGroup group, @count
 
     @inPorts.in.on "data", (data) =>
-      @cache.data data, @count
+      @cache.send data, @count
 
     @inPorts.in.on "endgroup", (group) =>
       @cache.endGroup @count
