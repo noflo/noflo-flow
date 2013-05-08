@@ -46,7 +46,7 @@
     , "CountedMerge": "./components/CountedMerge.coffee"
     , "Fork": "./components/Fork.coffee"
     , "Stop": "./components/Stop.coffee"
-    , "Split": "./components/Split.coffee"
+    , "CleanSplit": "./components/CleanSplit.coffee"
     , "ReverseSplit": "./components/ReverseSplit.coffee"
     , "Reorder": "./components/Reorder.coffee"
     }

@@ -3,7 +3,7 @@ _ = require "underscore"
 _s = require "underscore.string"
 { CacheStorage } = require "../lib/cache_storage"
 
-class Split extends noflo.Component
+class CleanSplit extends noflo.Component
 
   description: _s.clean "Like the generic split, except this splits the
   incoming connection one by one to each port, so a connection must disconnect
@@ -41,4 +41,4 @@ class Split extends noflo.Component
       @outPorts.out.disconnect index
     @cache.reset()
 
-exports.getComponent = -> new Split
+exports.getComponent = -> new CleanSplit
