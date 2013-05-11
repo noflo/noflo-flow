@@ -21,6 +21,7 @@ class CountedMerge extends noflo.Component
     @inPorts.threshold.on "data", (@threshold) =>
 
     @inPorts.in.on "connect", =>
+      @count++
       @cache.connect @count
 
     @inPorts.in.on "begingroup", (group) =>
@@ -33,10 +34,10 @@ class CountedMerge extends noflo.Component
       @cache.endGroup @count
 
     @inPorts.in.on "disconnect", =>
-      @cache.disconnect @count
+      @cache.disconnect @count if @count > 0
 
-      if ++@count >= @threshold
-        @cache.flushCache @outPorts.out, key for key in [0...@count]
+      if @count >= @threshold
+        @cache.flushCache @outPorts.out, key for key in [1..@count]
         @outPorts.out.disconnect()
         @count = 0
 
