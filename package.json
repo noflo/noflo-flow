@@ -47,6 +47,7 @@
     , "Fork": "./components/Fork.coffee"
     , "Stop": "./components/Stop.coffee"
     , "CleanSplit": "./components/CleanSplit.coffee"
+    , "CleanDisconnect": "./components/CleanDisconnect.coffee"
     , "ReverseSplit": "./components/ReverseSplit.coffee"
     , "Reorder": "./components/Reorder.coffee"
     }
@@ -55,6 +56,7 @@
     , "IsEmpty": "./graphs/IsEmpty.fbp"
     , "IsEqual": "./graphs/IsEqual.fbp"
     , "GroupCache": "./graphs/GroupCache.fbp"
+    , "WaitFor": "./graphs/WaitFor.fbp"
     }
   }
 , "scripts":
