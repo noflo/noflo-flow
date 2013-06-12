@@ -4,7 +4,8 @@ EXPORT=CACHE.FLUSH:READY
 
 'true' -> KEEP Cache(flow/Cache)
 
-Input(swiss/Hub) OUT -> IN ReadGroup(groups/ReadGroups) OUT -> IN Group(Split)
+Input(swiss/Hub) OUT -> IN ReadGroups(groups/ReadGroups) OUT -> IN DropGroupsOut(Drop)
+ReadGroups() GROUP -> IN Group(Split)
 
 Group() OUT -> KEY Cache()
 Group() OUT -> GROUP Regroup(groups/Group) OUT -> IN Cache()
