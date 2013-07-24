@@ -63,7 +63,8 @@
       "ReverseSplit": "./components/ReverseSplit.coffee",
       "Reorder": "./components/Reorder.coffee",
       "Gate": "./components/Gate.coffee",
-      "Throttle": "./components/Throttle.coffee"
+      "Throttle": "./components/Throttle.coffee",
+      "Concat": "./components/Concat.coffee"
     },
     "graphs": {
       "Escrow": "./graphs/Escrow.fbp",
