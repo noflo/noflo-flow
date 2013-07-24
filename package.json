@@ -22,7 +22,7 @@
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/kenhkan/noflo-flow/blob/master/LICENSE.md"
+      "url": "https://github.com/noflo/noflo-flow/blob/master/LICENSE.md"
     }
   ],
   "engines": {
@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kenhkan/noflo-flow"
+    "url": "git://github.com/noflo/noflo-flow"
   },
   "dependencies": {
     "noflo": "https://github.com/kenhkan/noflo/tarball/release",
