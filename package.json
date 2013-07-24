@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/noflo/noflo-flow"
+    "url": "https://github.com/noflo/noflo-flow"
   },
   "dependencies": {
     "noflo": "https://github.com/kenhkan/noflo/tarball/release",
