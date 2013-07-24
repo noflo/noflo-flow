@@ -1,66 +1,80 @@
-{ "name": "noflo-flow"
-, "description": "Flow Control for NoFlo"
-, "keywords":
-  [ "noflo"
-  , "flow"
-  , "flow control"
-  , "utilities"
-  ]
-, "author": "Kenneth Kan <kenhkan@gmail.com>"
-, "version": "0.0.13"
-, "licenses":
-  [ { "type": "MIT"
-    , "url": "https://github.com/kenhkan/noflo-flow/blob/master/LICENSE.md"
+{
+  "name": "noflo-flow",
+  "description": "Flow Control for NoFlo",
+  "keywords": [
+    "noflo",
+    "flow",
+    "flow control",
+    "utilities"
+  ],
+  "author": "Kenneth Kan <kenhkan@gmail.com>",
+  "contributors": [
+    {
+      "name": "Henri Bergius",
+      "email": "henri.bergius@iki.fi"
+    },
+    {
+      "name": "Ryan Shaw",
+      "email": "ryanshaw@unc.edu"
     }
-  ]
-, "engines":
-  { "node": ">=0.6.0"
-  }
-, "repository":
-  { "type": "git"
-  , "url": "git://github.com/kenhkan/noflo-flow"
-  }
-, "dependencies":
-  { "noflo": "https://github.com/kenhkan/noflo/tarball/master"
-  , "underscore": "1.4.x"
-  , "underscore.string": "2.3.x"
-  , "noflo-swiss": "0.0.x"
-  , "noflo-groups": "0.0.x"
-  , "noflo-adapters": "0.0.x"
-  , "noflo-strings": "0.0.x"
-  }
-, "devDependencies":
-  { "coffeelint": "*"
-  , "coffee-script": "1.6.x"
-  , "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/master"
-  , "nodeunit": ">=0.6.0"
-  }
-, "main": "./lib/main.coffee"
-, "noflo":
-  { "components":
-    { "Accept": "./components/Accept.coffee"
-    , "Deny": "./components/Deny.coffee"
-    , "HasGroup": "./components/HasGroup.coffee"
-    , "Cache": "./components/Cache.coffee"
-    , "CountDown": "./components/CountDown.coffee"
-    , "CountedMerge": "./components/CountedMerge.coffee"
-    , "Fork": "./components/Fork.coffee"
-    , "Stop": "./components/Stop.coffee"
-    , "CleanSplit": "./components/CleanSplit.coffee"
-    , "CleanDisconnect": "./components/CleanDisconnect.coffee"
-    , "ReverseSplit": "./components/ReverseSplit.coffee"
-    , "Reorder": "./components/Reorder.coffee"
+  ],
+  "version": "0.1.0",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/kenhkan/noflo-flow/blob/master/LICENSE.md"
     }
-  , "graphs":
-    { "Escrow": "./graphs/Escrow.fbp"
-    , "IsEmpty": "./graphs/IsEmpty.fbp"
-    , "IsEqual": "./graphs/IsEqual.fbp"
-    , "GroupCache": "./graphs/GroupCache.fbp"
-    , "WaitFor": "./graphs/WaitFor.fbp"
+  ],
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kenhkan/noflo-flow"
+  },
+  "dependencies": {
+    "noflo": "https://github.com/kenhkan/noflo/tarball/release",
+    "underscore": "1.4.x",
+    "underscore.string": "2.3.x",
+    "noflo-swiss": "0.0.x",
+    "noflo-groups": "0.0.x",
+    "noflo-adapters": "0.0.x",
+    "noflo-strings": "0.0.x"
+  },
+  "devDependencies": {
+    "coffeelint": "*",
+    "coffee-script": "1.6.x",
+    "noflo-test": "https://github.com/kenhkan/noflo-test/tarball/release",
+    "nodeunit": ">=0.6.0"
+  },
+  "main": "./lib/main.coffee",
+  "noflo": {
+    "components": {
+      "Accept": "./components/Accept.coffee",
+      "Deny": "./components/Deny.coffee",
+      "HasGroup": "./components/HasGroup.coffee",
+      "Cache": "./components/Cache.coffee",
+      "CountDown": "./components/CountDown.coffee",
+      "CountedMerge": "./components/CountedMerge.coffee",
+      "Fork": "./components/Fork.coffee",
+      "Stop": "./components/Stop.coffee",
+      "CleanSplit": "./components/CleanSplit.coffee",
+      "CleanDisconnect": "./components/CleanDisconnect.coffee",
+      "ReverseSplit": "./components/ReverseSplit.coffee",
+      "Reorder": "./components/Reorder.coffee",
+      "Gate": "./components/Gate.coffee",
+      "Throttle": "./components/Throttle.coffee"
+    },
+    "graphs": {
+      "Escrow": "./graphs/Escrow.fbp",
+      "IsEmpty": "./graphs/IsEmpty.fbp",
+      "IsEqual": "./graphs/IsEqual.fbp",
+      "GroupCache": "./graphs/GroupCache.fbp",
+      "WaitFor": "./graphs/WaitFor.fbp"
     }
-  }
-, "scripts":
-  { "pretest": "./node_modules/.bin/coffeelint -r components"
-  , "test": "./node_modules/.bin/noflo-test --spec test/*.coffee; ./node_modules/.bin/nodeunit test/nodeunit/*.coffee"
+  },
+  "scripts": {
+    "pretest": "./node_modules/.bin/coffeelint -r components",
+    "test": "./node_modules/.bin/noflo-test --spec test/*.coffee; ./node_modules/.bin/nodeunit test/nodeunit/*.coffee"
   }
 }
