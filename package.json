@@ -65,9 +65,7 @@
       "Gate": "./components/Gate.coffee",
       "Throttle": "./components/Throttle.coffee",
       "Concat": "./components/Concat.coffee",
-      "CollectUntilIdle": "./components/CollectUntilIdle.coffee",
-      "Kick": "./components/Kick.coffee",
-      "Drop": "./components/Drop.coffee"
+      "CollectUntilIdle": "./components/CollectUntilIdle.coffee"
     },
     "graphs": {
       "Escrow": "./graphs/Escrow.fbp",
