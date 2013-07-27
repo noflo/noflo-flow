@@ -1,0 +1,24 @@
+{
+  "name": "noflo-flow",
+  "description": "Flow Control for NoFlo",
+  "author": "Henri Bergius <henri.bergius@iki.fi>",
+  "repo": "noflo/noflo-dom",
+  "version": "0.0.1",
+  "keywords": [
+  ],
+  "dependencies": {
+    "noflo/noflo": "*"
+  },
+  "scripts": [
+    "components/Gate.coffee",
+    "index.js"
+  ],
+  "json": [
+    "component.json"
+  ],
+  "noflo": {
+    "components": {
+      "Gate": "components/Gate.coffee"
+    }
+  }
+}
