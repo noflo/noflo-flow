@@ -1,2 +1,7 @@
-node_modules
+.DS_Store
+*.swp
+*.js
+node_modules/
 npm-debug.log
+components/*/
+spec/*.xml
