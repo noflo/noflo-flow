@@ -1,56 +1,68 @@
-Socket = require("../../node_modules/noflo/src/lib/InternalSocket")
+noflo = require 'noflo'
 
-setup = (component, inNames=[], outNames=[], type = "component") ->
-  c = require("../../#{type}s/#{component}").getComponent()
-  inPorts = []
-  outPorts = []
+if typeof process is 'object' and process.title is 'node'
+  chai = require 'chai' unless chai
+  CleanDisconnect = require '../components/CleanDisconnect.coffee'
+else
+  CleanDisconnect = require 'noflo-core/components/CleanDisconnect.js'
 
-  for name in inNames
-    port = Socket.createSocket()
-    c.inPorts[name].attach(port)
-    inPorts.push(port)
+describe 'CleanDisconnect component', ->
+  g = {}
 
-  for name in outNames
-    port = Socket.createSocket()
-    c.outPorts[name].attach(port)
-    outPorts.push(port)
+  beforeEach ->
+    g.c = CleanDisconnect.getComponent()
+    g.insA = noflo.internalSocket.createSocket()
+    g.insB = noflo.internalSocket.createSocket()
+    g.insC = noflo.internalSocket.createSocket()
+    g.outA = noflo.internalSocket.createSocket()
+    g.outB = noflo.internalSocket.createSocket()
+    g.outC = noflo.internalSocket.createSocket()
+    g.c.inPorts.in.attach g.insA
+    g.c.inPorts.in.attach g.insB
+    g.c.inPorts.in.attach g.insC
+    g.c.outPorts.out.attach g.outA
+    g.c.outPorts.out.attach g.outB
+    g.c.outPorts.out.attach g.outC
 
-  [c, inPorts, outPorts]
+  describe 'when g.instantiated', ->
+    it 'should have input ports', ->
+      chai.expect(g.c.inPorts.in).to.be.an 'object'
 
-exports["ensure nesting streams get separated by disconnection"] = (test) ->
-  [c, [insA, insB, insC], [outA, outB, outC]] = setup("CleanDisconnect", ["in", "in", "in"], ["out", "out", "out"])
+    it 'should have an g.output port', ->
+      chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  count = 0
+  it "ensure nesting streams get separated by disconnection", (done) ->
+    count = 0
 
-  outA.on "data", (data) ->
-    test.equal data, "a"
-    test.equal count, 0
-    count++
-  outB.on "data", (data) ->
-    test.equal data, "b"
-    test.equal count, 2
-    count++
-  outC.on "data", (data) ->
-    test.equal data, "c"
-    test.equal count, 4
-    count++
+    g.outA.on "data", (data) ->
+      chai.expect(data).to.equal "a"
+      chai.expect(count).to.equal 0
+      count++
+    g.outB.on "data", (data) ->
+      chai.expect(data).to.equal "b"
+      chai.expect(count).to.equal 2
+      count++
+    g.outC.on "data", (data) ->
+      chai.expect(data).to.equal "c"
+      chai.expect(count).to.equal 4
+      count++
 
-  outA.on "disconnect", ->
-    test.equal count, 1
-    count++
-  outB.on "disconnect", ->
-    test.equal count, 3
-    count++
-  outC.on "disconnect", ->
-    test.equal count, 5
-    test.done()
+    g.outA.on "disconnect", ->
+      chai.expect(count).to.equal 1
+      count++
+    g.outB.on "disconnect", ->
+      chai.expect(count).to.equal 3
+      count++
+    g.outC.on "disconnect", ->
+      chai.expect(count).to.equal 5
+      done()
 
-  insA.connect()
-  insA.send("a")
-  insB.connect()
-  insB.send("b")
-  insC.connect()
-  insC.send("c")
-  insC.disconnect()
-  insB.disconnect()
-  insA.disconnect()
+    g.insA.connect()
+    g.insA.send("a")
+    g.insB.connect()
+    g.insB.send("b")
+    g.insC.connect()
+    g.insC.send("c")
+    g.insC.disconnect()
+    g.insB.disconnect()
+    g.insA.disconnect()

@@ -1,69 +1,80 @@
-component = require "../../components/Concat"
-socket = require "../../node_modules/noflo/src/lib/InternalSocket"
+noflo = require 'noflo'
 
-setupComponent = (inCount) ->
-  c = component.getComponent()
+if typeof process is 'object' and process.title is 'node'
+  chai = require 'chai' unless chai
+  Concat = require '../components/Concat.coffee'
+else
+  Concat = require 'noflo-core/components/Concat.js'
 
-  ins = []
-  while inCount
-    sock = socket.createSocket()
-    ins.push sock
-    c.inPorts.in.attach sock
-    inCount--
+describe 'Concat component', ->
+  g = {}
+  inCount = 2
 
-  out = socket.createSocket()
-  c.outPorts.out.attach out
+  beforeEach ->
+    g.c = Concat.getComponent()
 
-  [c, ins, out]
+    g.ins = []
+    while inCount
+      sock = noflo.internalSocket.createSocket()
+      g.ins.push sock
+      g.c.inPorts.in.attach sock
+      inCount--
 
-exports['packets sent to two ports should be ordered'] = (test) ->
-  [c, ins, out] = setupComponent 2
+    g.out = noflo.internalSocket.createSocket()
+    g.c.outPorts.out.attach g.out
 
-  test.expect 2
-  out.once 'data', (data) ->
-    test.equals data, 'hello'
-    out.once 'data', (data) ->
-      test.equals data, 'world'
-      test.done()
-    
-  ins[0].connect()
-  ins[1].send 'world'
-  ins[0].send 'hello'
+  describe 'when instantiated', ->
+    it 'should have input ports', ->
+      chai.expect(g.c.inPorts.in).to.be.an 'object'
 
-exports['packets sent to three ports should be ordered'] = (test) ->
-  [c, ins, out] = setupComponent 3
+    it 'should have an g.output port', ->
+      chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  test.expect 3
-  out.once 'data', (data) ->
-    test.equals data, 'foo'
-    out.once 'data', (data) ->
-      test.equals data, 'bar'
-      out.once 'data', (data) ->
-        test.equals data, 'baz'
-        test.done()
-    
-  ins[0].connect()
-  ins[1].send 'bar'
-  ins[2].send 'baz'
-  ins[0].send 'foo'
+  it 'packets sent to two ports should be ordered', (done) ->
+    g.out.once 'data', (data) ->
+      chai.expect(data).to.deep.equal 'hello'
+      g.out.once 'data', (data) ->
+        chai.expect(data).to.deep.equal 'world'
+        done()
+      
+    g.ins[0].connect()
+    g.ins[1].send 'world'
+    g.ins[0].send 'hello'
 
-exports['buffers should be cleared by disconnect to avoid deadlock'] = (test) ->
-  [c, ins, out] = setupComponent 2
+    # For next test
+    inCount = 3
 
-  test.expect 2
-  out.once 'data', (data) ->
-    test.equals data, 'hello'
-    out.once 'data', (data) ->
-      test.equals data, 'world'
-      test.done()
-    
-  ins[0].connect()
-  ins[1].connect()
-  # This packet will be lost because it doesn't have a pair
-  # and we disconnect
-  ins[1].send 'foo'
-  ins[0].disconnect()
-  ins[1].disconnect()
-  ins[0].connect()
-  ins[1].send 'world'
-  ins[0].send 'hello'
+  it 'packets sent to three ports should be ordered', (done) ->
+    g.out.once 'data', (data) ->
+      chai.expect(data).to.deep.equal 'foo'
+      g.out.once 'data', (data) ->
+        chai.expect(data).to.deep.equal 'bar'
+        g.out.once 'data', (data) ->
+          chai.expect(data).to.deep.equal 'baz'
+          done()
+      
+    g.ins[0].connect()
+    g.ins[1].send 'bar'
+    g.ins[2].send 'baz'
+    g.ins[0].send 'foo'
+
+    # For next test
+    inCount = 2
+
+  it 'buffers should be cleared by disconnect to avoid deadlock', (done) ->
+    g.out.once 'data', (data) ->
+      chai.expect(data).to.deep.equal 'hello'
+      g.out.once 'data', (data) ->
+        chai.expect(data).to.deep.equal 'world'
+        done()
+      
+    g.ins[0].connect()
+    g.ins[1].connect()
+    # This packet will be lost because it doesn't have a pair
+    # and we disconnect
+    g.ins[1].send 'foo'
+    g.ins[0].disconnect()
+    g.ins[1].disconnect()
+    g.ins[0].connect()
+    g.ins[1].send 'world'
+    g.ins[0].send 'hello'

@@ -1,71 +1,86 @@
-Socket = require("../../node_modules/noflo/src/lib/InternalSocket")
+noflo = require 'noflo'
 
-setup = (component, inNames=[], outNames=[], type = "component") ->
-  c = require("../../#{type}s/#{component}").getComponent()
-  inPorts = []
-  outPorts = []
+if typeof process is 'object' and process.title is 'node'
+  chai = require 'chai' unless chai
+  Reorder = require '../components/Reorder.coffee'
+else
+  Reorder = require 'noflo-core/components/Reorder.js'
 
-  for name in inNames
-    port = Socket.createSocket()
-    c.inPorts[name].attach(port)
-    inPorts.push(port)
+describe 'Reorder component', ->
+  g = {}
 
-  for name in outNames
-    port = Socket.createSocket()
-    c.outPorts[name].attach(port)
-    outPorts.push(port)
+  beforeEach ->
+    g.c = Reorder.getComponent()
+    g.insA = noflo.internalSocket.createSocket()
+    g.insB = noflo.internalSocket.createSocket()
+    g.insC = noflo.internalSocket.createSocket()
+    g.outA = noflo.internalSocket.createSocket()
+    g.outB = noflo.internalSocket.createSocket()
+    g.outC = noflo.internalSocket.createSocket()
+    g.c.inPorts.in.attach g.insA
+    g.c.outPorts.out.attach g.outA
 
-  [c, inPorts, outPorts]
+  describe 'when instantiated', ->
+    it 'should have input ports', ->
+      chai.expect(g.c.inPorts.in).to.be.an 'object'
 
-exports["connect some number of ports and packets are sent in the reverse order of attachment"] = (test) ->
-  [c, [insA, insB, insC], [outA, outB, outC]] = setup("Reorder", ["in", "in", "in"], ["out", "out", "out"])
+    it 'should have an g.output port', ->
+      chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  count = 0
+  it "connect some number of ports and packets are sent in the reverse order of attachment", (done) ->
+    g.c.inPorts.in.attach g.insB
+    g.c.inPorts.in.attach g.insC
+    g.c.outPorts.out.attach g.outB
+    g.c.outPorts.out.attach g.outC
 
-  outA.on "data", (data) ->
-    test.equal ++count, 3
-    test.equal data, "a"
-  outB.on "data", (data) ->
-    test.equal ++count, 2
-    test.equal data, "b"
-  outC.on "data", (data) ->
-    test.equal ++count, 1
-    test.equal data, "c"
-  outA.on "disconnect", ->
-    test.done()
+    count = 0
 
-  insA.connect()
-  insA.send("a")
-  insA.disconnect()
+    g.outA.on "data", (data) ->
+      chai.expect(++count).to.equal 3
+      chai.expect(data).to.equal "a"
+    g.outB.on "data", (data) ->
+      chai.expect(++count).to.equal 2
+      chai.expect(data).to.equal "b"
+    g.outC.on "data", (data) ->
+      chai.expect(++count).to.equal 1
+      chai.expect(data).to.equal "c"
+    g.outA.on "disconnect", ->
+      done()
 
-  insB.connect()
-  insB.send("b")
-  insB.disconnect()
+    g.insA.connect()
+    g.insA.send("a")
+    g.insA.disconnect()
 
-  insC.connect()
-  insC.send("c")
-  insC.disconnect()
+    g.insB.connect()
+    g.insB.send("b")
+    g.insB.disconnect()
 
-exports["the number of ports to wait for disconnection until forwarding takes place is the lessor of the number of inports and the number of outports"] = (test) ->
-  [c, [insA, insB], [outA, outB, outC]] = setup("Reorder", ["in", "in"], ["out", "out", "out"])
+    g.insC.connect()
+    g.insC.send("c")
+    g.insC.disconnect()
 
-  count = 0
+  it "the number of ports to wait for disconnection until forwarding takes place is the lessor of the number of inports and the number of g.outports", (done) ->
+    g.c.inPorts.in.attach g.insB
+    g.c.outPorts.out.attach g.outB
+    g.c.outPorts.out.attach g.outC
 
-  outA.on "data", (data) ->
-    test.equal ++count, 2
-    test.equal data, "a"
-  outB.on "data", (data) ->
-    test.equal ++count, 1
-    test.equal data, "b"
-  outC.on "data", (data) ->
-    test.ok false, "is not called"
-  outA.on "disconnect", ->
-    test.done()
+    count = 0
 
-  insA.connect()
-  insA.send("a")
-  insA.disconnect()
+    g.outA.on "data", (data) ->
+      chai.expect(++count).to.equal 2
+      chai.expect(data).to.equal "a"
+    g.outB.on "data", (data) ->
+      chai.expect(++count).to.equal 1
+      chai.expect(data).to.equal "b"
+    g.outC.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outA.on "disconnect", ->
+      done()
 
-  insB.connect()
-  insB.send("b")
-  insB.disconnect()
+    g.insA.connect()
+    g.insA.send("a")
+    g.insA.disconnect()
+
+    g.insB.connect()
+    g.insB.send("b")
+    g.insB.disconnect()

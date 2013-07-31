@@ -1,36 +1,44 @@
-Socket = require("../../node_modules/noflo/src/lib/InternalSocket")
+noflo = require 'noflo'
 
-setup = (component, inNames=[], outNames=[], type = "component") ->
-  c = require("../../#{type}s/#{component}").getComponent()
-  inPorts = []
-  outPorts = []
+if typeof process is 'object' and process.title is 'node'
+  chai = require 'chai' unless chai
+  ReverseSplit = require '../components/ReverseSplit.coffee'
+else
+  ReverseSplit = require 'noflo-core/components/ReverseSplit.js'
 
-  for name in inNames
-    port = Socket.createSocket()
-    c.inPorts[name].attach(port)
-    inPorts.push(port)
+describe 'ReverseSplit component', ->
+  g = {}
 
-  for name in outNames
-    port = Socket.createSocket()
-    c.outPorts[name].attach(port)
-    outPorts.push(port)
+  beforeEach ->
+    g.c = ReverseSplit.getComponent()
+    g.ins = noflo.internalSocket.createSocket()
+    g.outA = noflo.internalSocket.createSocket()
+    g.outB = noflo.internalSocket.createSocket()
+    g.outC = noflo.internalSocket.createSocket()
+    g.c.inPorts.in.attach g.ins
+    g.c.outPorts.out.attach g.outA
+    g.c.outPorts.out.attach g.outB
+    g.c.outPorts.out.attach g.outC
 
-  [c, inPorts, outPorts]
+  describe 'when instantiated', ->
+    it 'should have input ports', ->
+      chai.expect(g.c.inPorts.in).to.be.an 'object'
 
-exports["send some IPs and they are forwarded in reverse order of port attachments"] = (test) ->
-  [c, [ins], [outA, outB, outC]] = setup("ReverseSplit", ["in"], ["out", "out", "out"])
+    it 'should have an g.output port', ->
+      chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  count = 0
+  it "send some IPs and they are forwarded in reverse order of port attachments", (done) ->
+    count = 0
 
-  outA.on "data", (data) ->
-    test.equal ++count, 3
-  outB.on "data", (data) ->
-    test.equal ++count, 2
-  outC.on "data", (data) ->
-    test.equal ++count, 1
-  outA.on "disconnect", ->
-    test.done()
+    g.outA.on "data", (data) ->
+      chai.expect(++count).to.equal 3
+    g.outB.on "data", (data) ->
+      chai.expect(++count).to.equal 2
+    g.outC.on "data", (data) ->
+      chai.expect(++count).to.equal 1
+    g.outA.on "disconnect", ->
+      done()
 
-  ins.connect()
-  ins.send("a")
-  ins.disconnect()
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()

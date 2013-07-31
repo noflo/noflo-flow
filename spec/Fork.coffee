@@ -1,80 +1,85 @@
-Socket = require("../../node_modules/noflo/src/lib/InternalSocket")
+noflo = require 'noflo'
 
-setup = (component, inNames=[], outNames=[], type = "component") ->
-  c = require("../../#{type}s/#{component}").getComponent()
-  inPorts = []
-  outPorts = []
+if typeof process is 'object' and process.title is 'node'
+  chai = require 'chai' unless chai
+  Fork = require '../components/Fork.coffee'
+else
+  Fork = require 'noflo-core/components/Fork.js'
 
-  for name in inNames
-    port = Socket.createSocket()
-    c.inPorts[name].attach(port)
-    inPorts.push(port)
+describe 'Fork component', ->
+  g = {}
 
-  for name in outNames
-    port = Socket.createSocket()
-    c.outPorts[name].attach(port)
-    outPorts.push(port)
+  beforeEach ->
+    g.c = Fork.getComponent()
+    g.ins = noflo.internalSocket.createSocket()
+    g.portIns = noflo.internalSocket.createSocket()
+    g.outA = noflo.internalSocket.createSocket()
+    g.outB = noflo.internalSocket.createSocket()
+    g.outC = noflo.internalSocket.createSocket()
+    g.c.inPorts.in.attach g.ins
+    g.c.inPorts.port.attach g.portIns
+    g.c.outPorts.out.attach g.outA
+    g.c.outPorts.out.attach g.outB
+    g.c.outPorts.out.attach g.outC
 
-  [c, inPorts, outPorts]
+  describe 'when instantiated', ->
+    it 'should have input ports', ->
+      chai.expect(g.c.inPorts.in).to.be.an 'object'
+      chai.expect(g.c.inPorts.port).to.be.an 'object'
 
-exports["send some IPs, then send the index of the ArrayPort to port to"] = (test) ->
-  [c, [portIns, ins], [outA, outB, outC]] = setup("Fork", ["port", "in"], ["out", "out", "out"])
+    it 'should have an g.output port', ->
+      chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  outA.on "data", (data) ->
-    test.ok(false)
-  outB.on "data", (data) ->
-    test.equal(data, "a")
-  outC.on "data", (data) ->
-    test.ok(false)
-  outB.on "disconnect", ->
-    test.done()
+  it "send some IPs, then send the index of the ArrayPort to port to", (done) ->
+    g.outA.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outB.on "data", (data) ->
+      chai.expect("a")
+    g.outC.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outB.on "disconnect", ->
+      done()
 
-  ins.connect()
-  ins.send("a")
-  ins.disconnect()
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()
 
-  portIns.connect()
-  portIns.send(1)
-  portIns.disconnect()
+    g.portIns.connect()
+    g.portIns.send(1)
+    g.portIns.disconnect()
 
-exports["port to only one (the last one provided) ArrayPort"] = (test) ->
-  [c, [portIns, ins], [outA, outB, outC]] = setup("Fork", ["port", "in"], ["out", "out", "out"])
+  it "port to only one (the last one provided) ArrayPort", (done) ->
+    g.outA.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outB.on "data", (data) ->
+      chai.expect("a")
+    g.outC.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outB.on "disconnect", ->
+      done()
 
-  outA.on "data", (data) ->
-    test.ok(false)
-  outB.on "data", (data) ->
-    test.equal(data, "a")
-  outC.on "data", (data) ->
-    test.ok(false)
-  outB.on "disconnect", ->
-    test.done()
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()
 
-  ins.connect()
-  ins.send("a")
-  ins.disconnect()
+    g.portIns.connect()
+    g.portIns.send(2)
+    g.portIns.send(1)
+    g.portIns.disconnect()
 
-  portIns.connect()
-  portIns.send(2)
-  portIns.send(1)
-  portIns.disconnect()
+  it "send to all by default", (done) ->
+    g.outA.on "data", (data) ->
+      chai.expect("a")
+    g.outB.on "data", (data) ->
+      chai.expect("a")
+    g.outC.on "data", (data) ->
+      chai.expect("a")
+    g.outC.on "disconnect", ->
+      done()
 
-exports["send to all by default"] = (test) ->
-  [c, [portIns, ins], [outA, outB, outC]] = setup("Fork", ["port", "in"], ["out", "out", "out"])
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()
 
-  test.expect 3
-
-  outA.on "data", (data) ->
-    test.equal(data, "a")
-  outB.on "data", (data) ->
-    test.equal(data, "a")
-  outC.on "data", (data) ->
-    test.equal(data, "a")
-  outC.on "disconnect", ->
-    test.done()
-
-  ins.connect()
-  ins.send("a")
-  ins.disconnect()
-
-  portIns.connect()
-  portIns.disconnect()
+    g.portIns.connect()
+    g.portIns.disconnect()
