@@ -1,7 +1,7 @@
 noflo = require "noflo"
 _ = require "underscore"
 _s = require "underscore.string"
-{ CacheStorage } = require "../lib/cache_storage"
+{ CacheStorage } = require "nohoarder"
 
 class CleanSplit extends noflo.Component
 
