@@ -1,13 +1,13 @@
 noflo = require "noflo"
 _ = require "underscore"
-_s = require "underscore.string"
 { CacheStorage } = require "nohoarder"
 
 class Reorder extends noflo.Component
 
-  description: _s.clean "Connect to some number of inports and some number of
-  outports. All packets are stored and when the lessor of the number of inports
-  or of outports is reached, flush the packets in *reverse* order."
+  description: "Connect to some number of inports and some number of
+  outports. All packets are stored and when the lessor of the number of
+  inports or of outports is reached, flush the packets in *reverse*
+    order."
 
   constructor: ->
     @sockets = []
