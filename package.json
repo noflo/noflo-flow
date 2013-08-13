@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "noflo": "~0.4.0",
-    "underscore": "~1.4.x",
+    "underscore": "~1.5.x",
     "nohoarder": "~0.0.1"
   },
   "devDependencies": {
