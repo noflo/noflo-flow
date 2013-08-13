@@ -31,8 +31,8 @@
   },
   "dependencies": {
     "noflo": "~0.4.0",
-    "underscore": "1.4.x"
-    "nohoarder": "~0.0.1",
+    "underscore": "~1.4.x",
+    "nohoarder": "~0.0.1"
   },
   "devDependencies": {
     "grunt-exec": "~0.4.2",
