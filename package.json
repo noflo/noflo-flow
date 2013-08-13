@@ -31,12 +31,8 @@
   },
   "dependencies": {
     "noflo": "~0.4.0",
+    "underscore": "1.4.x"
     "nohoarder": "~0.0.1",
-    "underscore": "1.4.x",
-    "noflo-swiss": "0.0.x",
-    "noflo-groups": "0.0.x",
-    "noflo-adapters": "0.0.x",
-    "noflo-strings": "0.0.x"
   },
   "devDependencies": {
     "grunt-exec": "~0.4.2",
@@ -60,7 +56,6 @@
       "Accept": "./components/Accept.coffee",
       "Deny": "./components/Deny.coffee",
       "HasGroup": "./components/HasGroup.coffee",
-      "Cache": "./components/Cache.coffee",
       "CountDown": "./components/CountDown.coffee",
       "CountedMerge": "./components/CountedMerge.coffee",
       "Fork": "./components/Fork.coffee",
@@ -73,13 +68,6 @@
       "Throttle": "./components/Throttle.coffee",
       "Concat": "./components/Concat.coffee",
       "CollectUntilIdle": "./components/CollectUntilIdle.coffee"
-    },
-    "graphs": {
-      "Escrow": "./graphs/Escrow.fbp",
-      "IsEmpty": "./graphs/IsEmpty.fbp",
-      "IsEqual": "./graphs/IsEqual.fbp",
-      "GroupCache": "./graphs/GroupCache.fbp",
-      "WaitFor": "./graphs/WaitFor.fbp"
     }
   },
   "scripts": {
