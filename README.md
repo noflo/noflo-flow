@@ -9,3 +9,23 @@ to one out port versus another (or not at all).
 
 Feel free to contribute new components and graphs! I'll try to
 incorporate as soon as time allows.
+
+## Usage
+
+### flow/Floodgate
+
+Take in some IPs and cache them until it has been told which out-port to flush
+them.
+
+* In-port IN: the IPs to receive and cache
+* In-port PORT: the port index of the out-port to flush the IPs
+* Out-port OUT: an ArrayPort directing the release of IPs
+
+### flow/TrafficLight
+
+Either pass through IPs or cache them until told ready
+
+* In-port IN: the IPs to receive and cache
+* In-port STOP: `0` to stop and cache IPs and `1` to pass through
+* In-port READY: send any IP to flush the cache
+* Out-port OUT: out comes the IPs

@@ -1,0 +1,17 @@
+{
+  "name": "trafficlight-example",
+  "private": true,
+  "description": "",
+  "version": "0.0.0",
+  "author": {
+    "name": "Kenneth Kan",
+    "email": "kenhkan@gmail.com"
+  },
+  "dependencies": {
+    "noflo": "~0.4.0",
+    "noflo-core": "~0.1.1",
+    "noflo-flow": "~0.2.0",
+    "noflo-groups": "~0.1.2"
+  },
+  "keywords": []
+}

@@ -1,0 +1,8 @@
+EXPORT=FORK.OUT:OUT
+EXPORT=SPLIT.IN:PORT
+EXPORT=CACHE.IN:IN
+
+Cache(cache/Cache) OUT -> IN Fork(flow/Fork)
+
+Split(core/Split) OUT -> PORT Fork()
+Split() OUT -> READY Cache()
