@@ -29,3 +29,12 @@ Either pass through IPs or cache them until told ready
 * In-port STOP: `0` to stop and cache IPs and `1` to pass through
 * In-port READY: send any IP to flush the cache
 * Out-port OUT: out comes the IPs
+
+### flow/BufferUntil
+
+Buffer all IPs until we're ready, after which point, everything is passed
+through.
+
+* In-port IN: the IPs to receive and cache
+* In-port READY: send any IP to signal that we're ready
+* Out-port OUT: out comes the IPs
