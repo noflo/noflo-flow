@@ -30,7 +30,7 @@ describe 'Fork component', ->
     it 'should have an g.output port', ->
       chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  it "send some IPs, then send the index of the ArrayPort to port to", (done) ->
+  it "sends IPs to the specified port", (done) ->
     g.outA.on "data", (data) ->
       chai.expect(false).to.be.ok
     g.outB.on "data", (data) ->
@@ -40,15 +40,34 @@ describe 'Fork component', ->
     g.outB.on "disconnect", ->
       done()
 
-    g.ins.connect()
-    g.ins.send("a")
-    g.ins.disconnect()
-
     g.portIns.connect()
     g.portIns.send(1)
     g.portIns.disconnect()
 
-  it "port to only one (the last one provided) ArrayPort", (done) ->
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()
+
+  it "sends IPs to multiple ports", (done) ->
+    g.outA.on "data", (data) ->
+      chai.expect("a")
+    g.outB.on "data", (data) ->
+      chai.expect("a")
+    g.outC.on "data", (data) ->
+      chai.expect(false).to.be.ok
+    g.outB.on "disconnect", ->
+      done()
+
+    g.portIns.connect()
+    g.portIns.send(0)
+    g.portIns.send(1)
+    g.portIns.disconnect()
+
+    g.ins.connect()
+    g.ins.send("a")
+    g.ins.disconnect()
+
+  it "resets fork settings on every connection to 'PORT'", (done) ->
     g.outA.on "data", (data) ->
       chai.expect(false).to.be.ok
     g.outB.on "data", (data) ->
@@ -58,14 +77,16 @@ describe 'Fork component', ->
     g.outB.on "disconnect", ->
       done()
 
+    g.portIns.connect()
+    g.portIns.send(0)
+    g.portIns.disconnect()
+    g.portIns.connect()
+    g.portIns.send(1)
+    g.portIns.disconnect()
+
     g.ins.connect()
     g.ins.send("a")
     g.ins.disconnect()
-
-    g.portIns.connect()
-    g.portIns.send(2)
-    g.portIns.send(1)
-    g.portIns.disconnect()
 
   it "send to all by default", (done) ->
     g.outA.on "data", (data) ->
@@ -80,6 +101,3 @@ describe 'Fork component', ->
     g.ins.connect()
     g.ins.send("a")
     g.ins.disconnect()
-
-    g.portIns.connect()
-    g.portIns.disconnect()
