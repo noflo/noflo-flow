@@ -1,45 +1,49 @@
 noflo = require "noflo"
 _ = require "underscore"
-{ CacheStorage } = require "nohoarder"
 
 class Fork extends noflo.Component
 
-  description: "Connect some ports to 'OUT', send some IPs to 'IN', and
-    send the desired port to 'PORT' to selectively forward to a
-    particular port"
+  description: "Send the port number to 'PORT' to set where to direct IPs. It
+  acts as a 'Split' by default, sending IPs to every out-port."
 
   constructor: ->
-    @portIndex = null
-    @cache = new CacheStorage
+    @indexes = []
 
     @inPorts =
-      in: new noflo.Port
-      port: new noflo.Port
+      in: new noflo.Port 'all'
+      port: new noflo.Port 'number'
     @outPorts =
-      out: new noflo.ArrayPort
+      out: new noflo.ArrayPort 'all'
 
-    @inPorts.port.on "data", (portIndex) =>
-      portIndex = parseInt portIndex
-      @portIndex = portIndex if _.isNumber(portIndex) and not isNaN(portIndex)
+    @inPorts.port.on "connect", =>
+      @indexes = []
 
-    @inPorts.port.on "disconnect", =>
-      @cache.flushCache @outPorts.out, null, @portIndex
-      @outPorts.out.disconnect()
-      @portIndex = null
-
-    @inPorts.in.on "connect", =>
-      @cache.connect()
+    @inPorts.port.on "data", (index) =>
+      index = parseInt index
+      @indexes.push index if _.isNumber(index) and not isNaN(index)
 
     @inPorts.in.on "begingroup", (group) =>
-      @cache.beginGroup(group)
+      if @indexes.length > 0
+        for index in @indexes
+          @outPorts.out.beginGroup group, index
+      else
+        @outPorts.out.beginGroup group
 
     @inPorts.in.on "data", (data) =>
-      @cache.send(data)
+      if @indexes.length > 0
+        for index in @indexes
+          @outPorts.out.send data, index
+      else
+        @outPorts.out.send data
 
     @inPorts.in.on "endgroup", (group) =>
-      @cache.endGroup()
+      if @indexes.length > 0
+        for index in @indexes
+          @outPorts.out.endGroup index
+      else
+        @outPorts.out.endGroup()
 
     @inPorts.in.on "disconnect", =>
-      @cache.disconnect()
+      @outPorts.out.disconnect()
 
 exports.getComponent = -> new Fork
