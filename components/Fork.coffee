@@ -22,6 +22,10 @@ class Fork extends noflo.Component
       index = parseInt index
       @indexes.push index if _.isNumber(index) and not isNaN(index)
 
+    @inPorts.port.on "disconnect", =>
+      # De-duplicate
+      @indexes = _.uniq @indexes
+
     @inPorts.in.on "begingroup", (group) =>
       if @indexes.length > 0
         for index in @indexes
