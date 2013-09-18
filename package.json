@@ -18,7 +18,7 @@
       "email": "ryanshaw@unc.edu"
     }
   ],
-  "version": "0.3.2",
+  "version": "0.3.3",
   "licenses": [
     {
       "type": "MIT",
@@ -34,7 +34,7 @@
     "underscore": "~1.5.x",
     "nohoarder": "~0.0.1",
     "noflo-cache": "~0.0.1",
-    "noflo-swiss": "0.0.9"
+    "noflo-swiss": "~0.0.9"
   },
   "devDependencies": {
     "grunt-exec": "~0.4.2",
