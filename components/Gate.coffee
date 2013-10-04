@@ -33,5 +33,6 @@ class Gate extends noflo.Component
       @open = true
     @inPorts.close.on 'data', =>
       @open = false
+      @outPorts.out.disconnect()
 
 exports.getComponent = -> new Gate
