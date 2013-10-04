@@ -1,6 +1,8 @@
 noflo = require 'noflo'
 
 class Concat extends noflo.Component
+  description: 'Gathers data from all incoming connections and sends
+  them together in order of connection'
   constructor: ->
     @buffers = {}
     @hasConnected = {}

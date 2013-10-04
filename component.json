@@ -10,6 +10,7 @@
     "noflo/noflo": "*"
   },
   "scripts": [
+    "components/Concat.coffee",
     "components/Gate.coffee",
     "index.js"
   ],
@@ -18,6 +19,7 @@
   ],
   "noflo": {
     "components": {
+      "Concat": "components/Concat.coffee",
       "Gate": "components/Gate.coffee"
     }
   }

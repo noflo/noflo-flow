@@ -4,7 +4,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   Concat = require '../components/Concat.coffee'
 else
-  Concat = require 'noflo-core/components/Concat.js'
+  Concat = require 'noflo-flow/components/Concat.js'
 
 describe 'Concat component', ->
   g = {}
