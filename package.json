@@ -54,6 +54,7 @@
     "grunt-component": "~0.1.2"
   },
   "noflo": {
+    "icon": "random",
     "components": {
       "Accept": "./components/Accept.coffee",
       "Deny": "./components/Deny.coffee",
