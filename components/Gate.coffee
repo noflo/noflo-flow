@@ -2,6 +2,7 @@ noflo = require 'noflo'
 
 class Gate extends noflo.Component
   description: 'This component forwards received packets when the gate is open'
+  icon: 'pause'
 
   constructor: ->
     @open = false
@@ -31,8 +32,10 @@ class Gate extends noflo.Component
 
     @inPorts.open.on 'data', =>
       @open = true
+      @setIcon 'play'
     @inPorts.close.on 'data', =>
       @open = false
       @outPorts.out.disconnect()
+      @setIcon 'pause'
 
 exports.getComponent = -> new Gate
