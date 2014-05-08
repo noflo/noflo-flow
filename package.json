@@ -30,7 +30,7 @@
     "url": "https://github.com/noflo/noflo-flow"
   },
   "dependencies": {
-    "noflo": "~0.4.3",
+    "noflo": "~0.5.2",
     "underscore": "~1.5.x",
     "nohoarder": "~0.0.1",
     "noflo-cache": "~0.0.1",
@@ -46,36 +46,34 @@
     "chai": "~1.5.0",
     "mocha": "~1.9.0",
     "grunt-mocha-phantomjs": "~0.2.2",
-    "grunt-component-build": "~0.2.7",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-watch": "~0.3.1",
-    "component-json": "~0.1.4",
-    "grunt-combine": "~0.8.3",
-    "grunt-component": "~0.1.2"
+    "grunt-noflo-manifest": "^0.1.2",
+    "grunt-noflo-browser": "^0.1.1"
   },
   "noflo": {
     "icon": "random",
     "components": {
-      "Accept": "./components/Accept.coffee",
-      "Deny": "./components/Deny.coffee",
-      "HasGroup": "./components/HasGroup.coffee",
-      "CountDown": "./components/CountDown.coffee",
-      "CountedMerge": "./components/CountedMerge.coffee",
-      "Fork": "./components/Fork.coffee",
-      "Stop": "./components/Stop.coffee",
-      "CleanSplit": "./components/CleanSplit.coffee",
-      "CleanDisconnect": "./components/CleanDisconnect.coffee",
-      "ReverseSplit": "./components/ReverseSplit.coffee",
-      "Reorder": "./components/Reorder.coffee",
-      "Gate": "./components/Gate.coffee",
-      "Throttle": "./components/Throttle.coffee",
-      "Concat": "./components/Concat.coffee",
-      "CollectUntilIdle": "./components/CollectUntilIdle.coffee"
+      "Accept": "components/Accept.coffee",
+      "CleanDisconnect": "components/CleanDisconnect.coffee",
+      "CleanSplit": "components/CleanSplit.coffee",
+      "CollectUntilIdle": "components/CollectUntilIdle.coffee",
+      "Concat": "components/Concat.coffee",
+      "CountDown": "components/CountDown.coffee",
+      "CountedMerge": "components/CountedMerge.coffee",
+      "Deny": "components/Deny.coffee",
+      "Fork": "components/Fork.coffee",
+      "Gate": "components/Gate.coffee",
+      "HasGroup": "components/HasGroup.coffee",
+      "Reorder": "components/Reorder.coffee",
+      "ReverseSplit": "components/ReverseSplit.coffee",
+      "Stop": "components/Stop.coffee",
+      "Throttle": "components/Throttle.coffee"
     },
     "graphs": {
-      "Floodgate": "./graphs/Floodgate.fbp",
-      "TrafficLight": "./graphs/TrafficLight.fbp",
-      "BufferUntil": "./graphs/BufferUntil.fbp"
+      "BufferUntil": "graphs/BufferUntil.fbp",
+      "Floodgate": "graphs/Floodgate.fbp",
+      "TrafficLight": "graphs/TrafficLight.fbp"
     }
   },
   "scripts": {
