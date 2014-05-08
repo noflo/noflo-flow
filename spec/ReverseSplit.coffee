@@ -4,7 +4,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   ReverseSplit = require '../components/ReverseSplit.coffee'
 else
-  ReverseSplit = require 'noflo-core/components/ReverseSplit.js'
+  ReverseSplit = require 'noflo-flow/components/ReverseSplit.js'
 
 describe 'ReverseSplit component', ->
   g = {}

@@ -1,13 +1,13 @@
 noflo = require 'noflo'
-util = require 'util'
 
 class Throttle extends noflo.Component
+  description: 'Throttle packets based on load and maximum accepted load'
 
   constructor: ->
     @inPorts =
       in: new noflo.Port()
-      load: new noflo.Port()
-      max: new noflo.Port()
+      load: new noflo.Port 'int'
+      max: new noflo.Port 'int'
     @outPorts =
       out: new noflo.Port()
 

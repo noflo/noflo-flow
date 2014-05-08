@@ -11,9 +11,9 @@ class HasGroup extends noflo.Component
 
     @inPorts =
       in: new noflo.Port
-      regexp: new noflo.ArrayPort
-      group: new noflo.ArrayPort
-      reset: new noflo.ArrayPort
+      regexp: new noflo.ArrayPort 'string'
+      group: new noflo.ArrayPort 'string'
+      reset: new noflo.ArrayPort 'bang'
     @outPorts =
       yes: new noflo.Port
       no: new noflo.Port

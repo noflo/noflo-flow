@@ -1,3 +1,4 @@
+# @runtime noflo-nodejs
 EXPORT=FORK.OUT:OUT
 EXPORT=SPLIT.IN:PORT
 EXPORT=CACHE.IN:IN

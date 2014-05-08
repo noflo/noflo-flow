@@ -2,6 +2,8 @@ noflo = require "noflo"
 _ = require "underscore"
 { CacheStorage } = require "nohoarder"
 
+# @runtime noflo-nodejs
+
 class Reorder extends noflo.Component
 
   description: "Connect to some number of inports and some number of

@@ -11,7 +11,7 @@ class Deny extends noflo.Component
     @inPorts =
       in: new noflo.Port
       deny: new noflo.ArrayPort
-      reset: new noflo.ArrayPort
+      reset: new noflo.ArrayPort 'bang'
     @outPorts =
       out: new noflo.Port
 

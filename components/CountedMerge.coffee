@@ -1,6 +1,8 @@
 noflo = require "noflo"
 { CacheStorage } = require "nohoarder"
 
+# @runtime noflo-nodejs
+
 class CountedMerge extends noflo.Component
 
   description: "Like the normal 'Merge', but merge up to a specified

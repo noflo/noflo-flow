@@ -10,12 +10,12 @@ class CountDown extends noflo.Component
     @repeat = true
 
     @inPorts =
-      in: new noflo.Port
-      count: new noflo.Port
-      repeat: new noflo.Port
+      in: new noflo.Port 'bang'
+      count: new noflo.Port 'int'
+      repeat: new noflo.Port 'boolean'
     @outPorts =
-      out: new noflo.Port
-      count: new noflo.Port
+      out: new noflo.Port 'bang'
+      count: new noflo.Port 'int'
 
     @inPorts.count.on "data", (@count) =>
       @default = @count

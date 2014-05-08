@@ -2,6 +2,8 @@ noflo = require "noflo"
 _ = require "underscore"
 { CacheStorage } = require "nohoarder"
 
+# @runtime noflo-nodejs
+
 class CleanDisconnect extends noflo.Component
 
   description: "when several streams are nested through the array

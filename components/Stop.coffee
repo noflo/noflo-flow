@@ -1,6 +1,8 @@
 noflo = require "noflo"
 { CacheStorage } = require "nohoarder"
 
+# @runtime noflo-nodejs
+
 class Stop extends noflo.Component
 
   description: "Stop everything that's received and send out once we're
@@ -12,7 +14,7 @@ class Stop extends noflo.Component
 
     @inPorts =
       in: new noflo.ArrayPort
-      ready: new noflo.Port
+      ready: new noflo.Port 'bang'
     @outPorts =
       out: new noflo.Port
 

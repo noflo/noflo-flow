@@ -4,7 +4,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   CollectUntilIdle = require '../components/CollectUntilIdle.coffee'
 else
-  CollectUntilIdle = require 'noflo-core/components/CollectUntilIdle.js'
+  CollectUntilIdle = require 'noflo-flow/components/CollectUntilIdle.js'
 
 describe 'CollectUntilIdle component', ->
   g = {}

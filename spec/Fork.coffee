@@ -4,7 +4,7 @@ unless noflo.isBrowser()
   chai = require 'chai' unless chai
   Fork = require '../components/Fork.coffee'
 else
-  Fork = require 'noflo-core/components/Fork.js'
+  Fork = require 'noflo-flow/components/Fork.js'
 
 describe 'Fork component', ->
   g = {}

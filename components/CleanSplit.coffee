@@ -2,6 +2,8 @@ noflo = require "noflo"
 _ = require "underscore"
 { CacheStorage } = require "nohoarder"
 
+# @runtime noflo-nodejs
+
 class CleanSplit extends noflo.Component
 
   description: "Like the generic split, except this splits the incoming
