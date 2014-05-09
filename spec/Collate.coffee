@@ -16,6 +16,7 @@ describe 'Collate component', ->
     cntl = noflo.internalSocket.createSocket()
     ins.push noflo.internalSocket.createSocket()
     ins.push noflo.internalSocket.createSocket()
+    ins.push noflo.internalSocket.createSocket()
     out = noflo.internalSocket.createSocket()
     c.inPorts.ctlfields.attach cntl
     c.inPorts.in.attach inSock for inSock in ins
@@ -99,7 +100,10 @@ describe 'Collate component', ->
       # Randomize the rest of the entries to make sure we are always collating right
       original.sort -> 0.5 - Math.random()
 
-      for entry in original
+      # Send the beginning of transmission to all inputs
+      inport.connect() for inport in ins
+
+      for entry,index in original
         # Parse comma-separated
         entryData = entry.split ','
         # Convert to object
@@ -108,7 +112,13 @@ describe 'Collate component', ->
           entryObj[header] = entryData[idx]
 
         # Send to a random input port
-        ins[Math.floor(Math.random()*ins.length)].send entryObj
+        randomConnection = Math.floor Math.random() * ins.length
+        ins[randomConnection].send entryObj
+
+        # Once we're close to the end we disconnect one of the inputs
+        if index is original.length - 3
+          disconnecting = ins.pop()
+          disconnecting.disconnect()
 
       # Finally disconnect all
       inPort.disconnect() for inPort in ins
