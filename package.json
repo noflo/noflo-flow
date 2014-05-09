@@ -57,6 +57,7 @@
       "Accept": "components/Accept.coffee",
       "CleanDisconnect": "components/CleanDisconnect.coffee",
       "CleanSplit": "components/CleanSplit.coffee",
+      "Collate": "components/Collate.coffee",
       "CollectUntilIdle": "components/CollectUntilIdle.coffee",
       "Concat": "components/Concat.coffee",
       "CountDown": "components/CountDown.coffee",

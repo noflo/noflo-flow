@@ -20,7 +20,8 @@
     "components/Fork.coffee",
     "components/HasGroup.coffee",
     "components/ReverseSplit.coffee",
-    "components/Throttle.coffee"
+    "components/Throttle.coffee",
+    "components/Collate.coffee"
   ],
   "json": [
     "component.json"
@@ -29,6 +30,7 @@
     "icon": "random",
     "components": {
       "Accept": "components/Accept.coffee",
+      "Collate": "components/Collate.coffee",
       "CollectUntilIdle": "components/CollectUntilIdle.coffee",
       "Concat": "components/Concat.coffee",
       "CountDown": "components/CountDown.coffee",
