@@ -13,11 +13,15 @@ class CountedMerge extends noflo.Component
     @threshold = 1
     @cache = new CacheStorage
 
-    @inPorts =
-      in: new noflo.ArrayPort
-      threshold: new noflo.Port
-    @outPorts =
-      out: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IP to merge'
+      threshold:
+        datatype: 'number'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
 
     @inPorts.threshold.on "data", (@threshold) =>
 

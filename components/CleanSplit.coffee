@@ -14,10 +14,13 @@ class CleanSplit extends noflo.Component
   constructor: ->
     @cache = new CacheStorage
 
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.ArrayPort
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        addressable: true
 
     @inPorts.in.on "connect", =>
       @cache.connect()

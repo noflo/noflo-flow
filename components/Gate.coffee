@@ -7,12 +7,18 @@ class Gate extends noflo.Component
   constructor: ->
     @open = false
 
-    @inPorts =
-      in: new noflo.Port 'all'
-      open: new noflo.Port 'bang'
-      close: new noflo.Port 'bang'
-    @outPorts =
-      out: new noflo.Port 'all'
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+      open:
+        datatype: 'bang'
+        description: 'Send one IP to open the gate'
+      close:
+        datatype: 'bang'
+        description: 'Send one IP to close the gate'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
 
     @inPorts.in.on 'connect', =>
       return unless @open

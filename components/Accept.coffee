@@ -8,12 +8,19 @@ class Accept extends noflo.Component
     @default = []
     @accept = @default
 
-    @inPorts =
-      in: new noflo.Port
-      accept: new noflo.ArrayPort
-      reset: new noflo.ArrayPort
-    @outPorts =
-      out: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'An IP to be forwarded if accepted'
+      accept:
+        datatype: 'all'
+        description: 'IP to be accepted'
+      reset:
+        datatype: 'bang'
+        description: 'Reset the list accepted IP'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
 
     @inPorts.accept.on "data", (data) =>
       @accept.push(data)

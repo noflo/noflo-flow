@@ -15,10 +15,14 @@ class Reorder extends noflo.Component
     @sockets = []
     @cache = new CacheStorage
 
-    @inPorts =
-      in: new noflo.ArrayPort
-    @outPorts =
-      out: new noflo.ArrayPort
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        addressable: true
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        addressable: true
 
     @inPorts.in.on "connect", (socket) =>
       @socIndex = @sockets.indexOf socket

@@ -6,10 +6,13 @@ class ReverseSplit extends noflo.Component
   description: "Like Split, expect the last port gets forwarded packets first"
 
   constructor: ->
-    @inPorts =
-      in: new noflo.Port
-    @outPorts =
-      out: new noflo.ArrayPort
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        addressable: true
 
     @inPorts.in.on "connect", =>
       @portCount = @outPorts.out.sockets.length
@@ -25,7 +28,7 @@ class ReverseSplit extends noflo.Component
       @forward "endGroup"
 
     @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
+      @forward "disconnect"
 
   forward: (operation, packet) ->
     for i in [@portCount-1..0]
