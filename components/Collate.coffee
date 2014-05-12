@@ -2,28 +2,29 @@ noflo = require 'noflo'
 
 # The actual collation algorithm, returns a closure with the control fields
 # that can be used with Array.prototype.sort()
-sortByControlFields = (fields) ->
-  (a, b) ->
-    # If there are no control fields specified we can't sort
-    return 0 unless fields.length
+sortByControlFields = (fields, a, b) ->
+  # If there are no control fields specified we can't sort
+  return 0 unless fields.length
 
-    # Comparison of a single control field
-    sort = (left, right) ->
-      # Lowercase strings to they always sort correctly
-      left = left.toLowerCase() if typeof left is 'string'
-      right = right.toLowerCase() if typeof right is 'string'
+  # Comparison of a single control field
+  sort = (left, right) ->
+    # Lowercase strings to they always sort correctly
+    left = left.toLowerCase() if typeof left is 'string'
+    right = right.toLowerCase() if typeof right is 'string'
 
-      return 0 if left is right
-      return 1 if left > right
-      -1
+    return 0 if left is right
+    return 1 if left > right
+    -1
 
-    # Traverse the fields until you find one to sort by
-    for field in fields
-      order = sort a.payload[field], b.payload[field]
-      return order unless order is 0
+  # Traverse the fields until you find one to sort by
+  for field in fields
+    order = sort a.payload[field], b.payload[field]
+    return order unless order is 0
 
-    # All fields were the same, so order doesn't matter
-    0
+  # All fields were the same, send in order of appearance
+  if @indexOf(a) < @indexOf(b)
+    return -1
+  1
 
 # Sending the collated objects to the output port together with bracket IPs
 sendWithGroups = (packets, fields, port) ->
@@ -85,7 +86,8 @@ exports.getComponent = ->
       # Receive the packets
       packets = c.inPorts.in.buffer.filter (packet) -> packet.event is 'data'
       # Sort them by control fields if there are any
-      packets.sort sortByControlFields fields if fields.length
+      original = packets.slice 0
+      packets.sort sortByControlFields.bind original, fields
       # Send them out
       sendWithGroups packets, fields, c.outPorts.out
       # Prepare for the next set to collate
