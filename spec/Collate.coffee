@@ -9,11 +9,12 @@ else
 describe 'Collate component', ->
   c = null
   cntl = null
-  ins = []
+  ins = null
   out = null
   beforeEach ->
     c = Collate.getComponent()
     cntl = noflo.internalSocket.createSocket()
+    ins = []
     ins.push noflo.internalSocket.createSocket()
     ins.push noflo.internalSocket.createSocket()
     ins.push noflo.internalSocket.createSocket()
@@ -122,3 +123,47 @@ describe 'Collate component', ->
 
       # Finally disconnect all
       inPort.disconnect() for inPort in ins
+
+  describe 'Collating space-limited files', ->
+    it 'should return the data in the correct order', (done) ->
+      # This test works with files so it only works on Node.js
+      return done() if noflo.isBrowser()
+
+      fs = require 'fs'
+      path = require 'path'
+
+      master = fs.readFileSync path.resolve(__dirname, 'fixtures/collate/01master.txt'), 'utf-8'
+      detail = fs.readFileSync path.resolve(__dirname, 'fixtures/collate/01detail.txt'), 'utf-8'
+      output = fs.readFileSync path.resolve(__dirname, 'fixtures/collate/01output.txt'), 'utf-8'
+      received = []
+      out.on 'begingroup', (group) ->
+        received.push '===> Open Bracket\r'
+      out.on 'data', (data) ->
+        received.push "#{data[0]}#{data[1]}#{data[2]}   #{data[3]}\r"
+      out.on 'endgroup', ->
+        received.push '===> Close Bracket\r'
+      out.on 'disconnect', ->
+        received.push 'Run complete.\r\n'
+        chai.expect(received.join("\n")).to.equal output
+        done()
+
+      # Configure
+      cntl.send '0,1,2'
+
+      # Send lines
+      masterLines = master.split "\n"
+      for line in masterLines
+        matched = line.match /([\d]{3})([A-Z]{2})([\d]{5})   ([A-Z])/
+        continue unless matched
+        matched.shift()
+        ins[1].send matched
+      detailLines = detail.split "\n"
+      for line in detailLines
+        matched = line.match /([\d]{3})([A-Z]{2})([\d]{5})   ([A-Z])/
+        continue unless matched
+        matched.shift()
+        ins[1].send matched
+
+      # All done
+      ins[0].disconnect()
+      ins[1].disconnect()
