@@ -8,12 +8,20 @@ class Deny extends noflo.Component
     @default = ["", null, undefined]
     @deny = @default
 
-    @inPorts =
-      in: new noflo.Port
-      deny: new noflo.ArrayPort
-      reset: new noflo.ArrayPort 'bang'
-    @outPorts =
-      out: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to filter through the deny list'
+      deny:
+        datatype: 'all'
+        description: 'IPs to deny'
+      reset:
+        datatype: 'bang'
+        description: 'Reset list of denied IPs'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        description: 'Non denied IPs'
 
     @inPorts.deny.on "data", (data) =>
       @deny.push(data)

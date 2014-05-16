@@ -4,57 +4,53 @@ class Concat extends noflo.Component
   description: 'Gathers data from all incoming connections and sends
   them together in order of connection'
   constructor: ->
-    @buffers = {}
-    @hasConnected = {}
+    @mapping = []
+    @buffers = []
+    @connections = 0
 
-    @inPorts =
-      in: new noflo.ArrayPort
-    @outPorts =
-      out: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        addressable: true
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
 
     subscribed = false
-    @inPorts.in.on 'connect', (socket) =>
-      @hasConnected[@inPorts.in.sockets.indexOf(socket)] = true
-
-      # In this component we need to know which of the sockets
-      # sent the data, so we connect to the sockets directly
-      unless subscribed
-        @subscribeSocket id for socket, id in @inPorts.in.sockets
-        subscribed = true
-
+    @connections = 0
+    @inPorts.in.on 'connect', (socket, index) =>
+      @mapping[index] = @connections
+      @buffers[@mapping[index]] = [] unless @buffers[@mapping[index]]
+      @connections++
     @inPorts.in.on 'begingroup', (group) =>
       @outPorts.out.beginGroup group
+    @inPorts.in.on 'data', (data, index) =>
+      @buffers[@mapping[index]].push data
+      @sendIfPossible()
     @inPorts.in.on 'endgroup', =>
       @outPorts.out.endGroup()
     @inPorts.in.on 'disconnect', =>
-      # Check that all ports have disconnected before emitting
-      for socket in @inPorts.in.sockets
-        return if socket.isConnected()
-      do @clearBuffers
-      @outPorts.out.disconnect()
+      @connections--
+      @sendIfPossible()
+      @clearBuffers() if @connections is 0
 
   clearBuffers: ->
-    for id, data of @buffers
-      return unless @hasConnected[id]
-    @buffers = {}
-    @hasConnected = {}
+    @buffers = []
+    @mapping = []
+    @connections = 0
+    @outPorts.out.disconnect()
 
-  subscribeSocket: (id) ->
-    @buffers[id] = []
-    @inPorts.in.sockets[id].on 'data', (data) =>
-      unless typeof @buffers[id] is 'object'
-        @buffers[id] = []
-      @buffers[id].push data
-      do @checkSend
+  sendIfPossible: ->
+    nbSend = -1
+    for buffer in @buffers
+      nbSend = buffer.length if nbSend < 0
+      nbSend = Math.min buffer.length, nbSend
+    console.log "buffers=#{@buffers.length} send=#{nbSend}"
 
-  checkSend: ->
-    # First check that we have data in all buffers
-    for socket, id in @inPorts.in.sockets
-      # If any of the buffers is empty we cancel
-      return unless @buffers[id]
-      return unless @buffers[id].length
-
-    # Okay, all buffers have data: send.
-    @outPorts.out.send buffer.shift() for id, buffer of @buffers
+    i = 0
+    while i < nbSend
+      for buffer in @buffers
+        @outPorts.out.send buffer.shift()
+      i++
 
 exports.getComponent = -> new Concat

@@ -12,11 +12,17 @@ class Stop extends noflo.Component
     @count = 0
     @cache = new CacheStorage
 
-    @inPorts =
-      in: new noflo.ArrayPort
-      ready: new noflo.Port 'bang'
-    @outPorts =
-      out: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to buffer until an IP arrives on the ready port'
+      ready:
+        datatype: 'bang'
+        description: 'Trigger the emission of all the stored IPs'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        description: 'IPs forwarded from the in port'
 
     @inPorts.ready.on "disconnect", =>
       @cache.flushCache @outPorts.out, key for key in [0...@count]

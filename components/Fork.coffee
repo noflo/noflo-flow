@@ -9,11 +9,17 @@ class Fork extends noflo.Component
   constructor: ->
     @indexes = []
 
-    @inPorts =
-      in: new noflo.Port 'all'
-      port: new noflo.Port 'number'
-    @outPorts =
-      out: new noflo.ArrayPort 'all'
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to forward'
+      port:
+        datatype: 'number'
+        description: 'Number of ports to forward IPs to'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        addressable: true
 
     @inPorts.port.on "connect", =>
       @indexes = []
@@ -31,23 +37,31 @@ class Fork extends noflo.Component
         for index in @indexes
           @outPorts.out.beginGroup group, index
       else
-        @outPorts.out.beginGroup group
+        for index in @outPorts.out.listAttached()
+          @outPorts.out.beginGroup group, idx
 
     @inPorts.in.on "data", (data) =>
       if @indexes.length > 0
         for index in @indexes
           @outPorts.out.send data, index
       else
-        @outPorts.out.send data
+        for index in @outPorts.out.listAttached()
+          @outPorts.out.send data, index
 
     @inPorts.in.on "endgroup", (group) =>
       if @indexes.length > 0
         for index in @indexes
           @outPorts.out.endGroup index
       else
-        @outPorts.out.endGroup()
+        for index in @outPorts.out.listAttached()
+          @outPorts.out.endGroup index
 
     @inPorts.in.on "disconnect", =>
-      @outPorts.out.disconnect()
+      if @indexes.length > 0
+        for index in @indexes
+          @outPorts.out.disconnect index
+      else
+        for index in @outPorts.out.listAttached()
+          @outPorts.out.disconnect index
 
 exports.getComponent = -> new Fork

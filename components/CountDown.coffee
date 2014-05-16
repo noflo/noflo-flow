@@ -9,19 +9,28 @@ class CountDown extends noflo.Component
     @default = @count = 1
     @repeat = true
 
-    @inPorts =
-      in: new noflo.Port 'bang'
-      count: new noflo.Port 'int'
-      repeat: new noflo.Port 'boolean'
-    @outPorts =
-      out: new noflo.Port 'bang'
-      count: new noflo.Port 'int'
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'bang'
+        description: 'IPs to decrease the count down'
+      count:
+        datatype: 'int'
+        description: 'Count down starting number'
+      repeat:
+        datatype: 'boolean'
+        description: 'Repeat the count down mechanism if true'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'bang'
+        description: 'IP emitted when the count reach 0'
+      count:
+        datatype: 'int'
+        description: 'Unused at this time'
 
     @inPorts.count.on "data", (@count) =>
       @default = @count
 
     @inPorts.repeat.on "data", (@repeat) =>
-      @default = null unless @repeat
 
     @inPorts.in.on "disconnect", =>
       if --@count is 0

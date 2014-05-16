@@ -4,12 +4,17 @@ class Throttle extends noflo.Component
   description: 'Throttle packets based on load and maximum accepted load'
 
   constructor: ->
-    @inPorts =
-      in: new noflo.Port()
-      load: new noflo.Port 'int'
-      max: new noflo.Port 'int'
-    @outPorts =
-      out: new noflo.Port()
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to forward'
+      load:
+        datatype: 'int'
+      max:
+        datatype: 'int'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
 
     @q = []
     @groups = []

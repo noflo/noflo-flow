@@ -10,12 +10,18 @@ class CollectUntilIdle extends noflo.Component
     @groups = []
     @timeout = null
 
-    @inPorts =
-      in: new noflo.Port 'all'
-      timeout: new noflo.Port 'number'
-    @outPorts =
-      out: new noflo.Port 'all'
-    
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to collect until a timeout'
+      timeout:
+        datatype: 'number'
+        description: 'Amount of time to hold IPs for in milliseconds'
+    @outPorts = new noflo.OutPorts
+      out:
+        datatype: 'all'
+        description: 'IPs collected until the timeout'
+
     @inPorts.timeout.on 'data', (data) =>
       @milliseconds = parseInt data
 
@@ -53,5 +59,5 @@ class CollectUntilIdle extends noflo.Component
     @outPorts.out.send data.data
     for group in data.groups
       @outPorts.out.endGroup()
-      
+
 exports.getComponent = -> new CollectUntilIdle

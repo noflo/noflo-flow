@@ -9,14 +9,27 @@ class HasGroup extends noflo.Component
     @matchGroups = []
     @regexps = []
 
-    @inPorts =
-      in: new noflo.Port
-      regexp: new noflo.ArrayPort 'string'
-      group: new noflo.ArrayPort 'string'
-      reset: new noflo.ArrayPort 'bang'
-    @outPorts =
-      yes: new noflo.Port
-      no: new noflo.Port
+    @inPorts = new noflo.InPorts
+      in:
+        datatype: 'all'
+        description: 'IPs to route use their groups'
+      regexp:
+        datatype: 'string'
+        description: 'Regexps to match groups'
+      group:
+        datatype: 'string'
+        description: 'List of groups (one group per IP)'
+      reset:
+        datatype: 'bang'
+        description: 'Reset the list of groups and regexps'
+    @outPorts = new noflo.OutPorts
+      yes:
+        datatype: 'all'
+        description: 'IPs with group that match the groups or regexps provided'
+      no:
+        datatype: 'all'
+        description: 'IPs with group that don\'t match the groups or regexps
+         provided'
 
     @inPorts.group.on "data", (data) =>
       @matchGroups.push(data)
