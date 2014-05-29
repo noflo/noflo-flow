@@ -7,7 +7,7 @@
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",
-    "component/underscore": "*"
+    "jashkenas/underscore": "*"
   },
   "scripts": [
     "components/Concat.coffee",
