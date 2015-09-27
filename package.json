@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "noflo": "~0.5.2",
-    "underscore": "~1.5.x",
+    "underscore": "1.8.3",
     "nohoarder": "~0.0.1",
     "noflo-cache": "~0.0.1",
     "noflo-swiss": "~0.0.9"
