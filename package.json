@@ -47,7 +47,7 @@
     "mocha": "~1.9.0",
     "grunt-mocha-phantomjs": "~0.2.2",
     "grunt-contrib-uglify": "~0.2.0",
-    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-watch": "~0.6.1",
     "grunt-noflo-manifest": "^0.1.2",
     "grunt-noflo-browser": "^0.1.1"
   },
