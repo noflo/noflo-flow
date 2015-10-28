@@ -37,7 +37,7 @@
     "noflo-swiss": "~0.0.9"
   },
   "devDependencies": {
-    "grunt-exec": "~0.4.2",
+    "grunt-exec": "~0.4.6",
     "noflo-test": "~0.0.4",
     "grunt": "~0.4.1",
     "grunt-contrib-coffee": "~0.6.6",
