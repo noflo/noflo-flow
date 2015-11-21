@@ -40,7 +40,7 @@
     "grunt-exec": "~0.4.2",
     "noflo-test": "~0.0.4",
     "grunt": "~0.4.1",
-    "grunt-contrib-coffee": "~0.6.6",
+    "grunt-contrib-coffee": "~0.13.0",
     "grunt-coffeelint": "~0.0.6",
     "grunt-cafe-mocha": "~0.1.2",
     "chai": "~1.5.0",
