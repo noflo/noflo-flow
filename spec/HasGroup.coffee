@@ -52,6 +52,7 @@ describe 'HasGroup component', ->
         done()
 
       group.send 'match'
+      ins.connect()
       ins.beginGroup 'match'
       ins.send 'a'
       ins.endGroup()
@@ -67,6 +68,7 @@ describe 'HasGroup component', ->
         done()
 
       group.send 'match'
+      ins.connect()
       ins.beginGroup 'not a match'
       ins.send 'b'
       ins.endGroup()
@@ -82,6 +84,7 @@ describe 'HasGroup component', ->
         done()
 
       regexp.send 'reg.*'
+      ins.connect()
       ins.beginGroup 'a regexp match'
       ins.send 'c'
       ins.endGroup()
