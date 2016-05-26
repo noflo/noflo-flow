@@ -30,7 +30,7 @@
     "url": "https://github.com/noflo/noflo-flow"
   },
   "dependencies": {
-    "noflo": "0.5.13",
+    "noflo": "~0.5.22",
     "underscore": "1.8.3",
     "nohoarder": "0.0.3",
     "noflo-cache": "0.0.3",
