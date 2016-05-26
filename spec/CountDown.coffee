@@ -14,7 +14,7 @@ describe 'CountDown component', ->
   ins = null
   out = null
   before (done) ->
-    @timeout 4000
+    @timeout 6000
     loader = new noflo.ComponentLoader baseDir
     loader.load 'flow/CountDown', (err, instance) ->
       return done err if err
