@@ -52,6 +52,7 @@ describe 'HasGroup component', ->
       ins.beginGroup 'match'
       ins.send 'a'
       ins.endGroup()
+      ins.disconnect()
 
   describe 'with an exact group mismatch', ->
     it 'it should not get a match', (done) ->
@@ -63,6 +64,7 @@ describe 'HasGroup component', ->
       ins.beginGroup 'not a match'
       ins.send 'b'
       ins.endGroup()
+      ins.disconnect()
 
   describe 'with a regexp group match', ->
     it 'it should get a match', (done) ->
@@ -74,3 +76,4 @@ describe 'HasGroup component', ->
       ins.beginGroup 'a regexp match'
       ins.send 'c'
       ins.endGroup()
+      ins.disconnect()
