@@ -44,6 +44,9 @@ describe 'HasGroup component', ->
 
   describe 'with an exact group match', ->
     it 'it should get a match', (done) ->
+      noOut.on 'data', (data) ->
+        chai.expect(true, 'Received on wrong port').to.equal false
+        done()
       yesOut.on 'data', (data) ->
         chai.expect(data).to.equal 'a'
         done()
@@ -56,6 +59,9 @@ describe 'HasGroup component', ->
 
   describe 'with an exact group mismatch', ->
     it 'it should not get a match', (done) ->
+      yesOut.on 'data', (data) ->
+        chai.expect(true, 'Received on wrong port').to.equal false
+        done()
       noOut.on 'data', (data) ->
         chai.expect(data).to.equal 'b'
         done()
@@ -68,6 +74,9 @@ describe 'HasGroup component', ->
 
   describe 'with a regexp group match', ->
     it 'it should get a match', (done) ->
+      noOut.on 'data', (data) ->
+        chai.expect(true, 'Received on wrong port').to.equal false
+        done()
       yesOut.on 'data', (data) ->
         chai.expect(data).to.equal 'c'
         done()
