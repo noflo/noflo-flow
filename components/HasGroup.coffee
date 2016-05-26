@@ -8,6 +8,7 @@ class HasGroup extends noflo.Component
   constructor: ->
     @matchGroups = []
     @regexps = []
+    @port = null
 
     @inPorts = new noflo.InPorts
       in:
@@ -38,14 +39,13 @@ class HasGroup extends noflo.Component
       @regexps.push(new RegExp(data))
 
     @inPorts.reset.on "data", (data) =>
-      @groups = []
-      @regexps = []
+      do @reset
 
     @inPorts.in.on "connect", =>
       @port = null
 
     @inPorts.in.on "begingroup", (group) =>
-      @match(group) unless @port?
+      @match(group) unless @port
       @port?.beginGroup(group)
 
     @inPorts.in.on "data", (data) =>
@@ -70,5 +70,13 @@ class HasGroup extends noflo.Component
 
     # Otherwise, fail
     @port = @outPorts.no
+
+  reset: ->
+    @groups = []
+    @regexps = []
+    @port = null
+
+  shutdown: ->
+    do @reset
 
 exports.getComponent = -> new HasGroup
