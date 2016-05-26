@@ -2,8 +2,8 @@
   "name": "noflo-flow",
   "description": "Flow Control for NoFlo",
   "author": "Henri Bergius <henri.bergius@iki.fi>",
-  "repo": "noflo/noflo-dom",
-  "version": "0.3.4",
+  "repo": "noflo/noflo-flow",
+  "version": "0.3.5",
   "keywords": [],
   "dependencies": {
     "noflo/noflo": "*",
