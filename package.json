@@ -26,22 +26,22 @@
   },
   "dependencies": {
     "noflo": "~0.5.22",
-    "underscore": "1.8.3",
-    "nohoarder": "0.0.3",
-    "noflo-cache": "0.0.3"
+    "underscore": "~1.8.3",
+    "nohoarder": "~0.0.3",
+    "noflo-cache": "~0.0.3"
   },
   "devDependencies": {
-    "grunt": "0.4.5",
-    "grunt-contrib-coffee": "0.6.7",
-    "grunt-coffeelint": "~0.0.15",
+    "grunt": "^0.4.5",
+    "grunt-contrib-coffee": "^0.6.7",
+    "grunt-coffeelint": "^0.0.15",
     "grunt-mocha-test": "^0.12.7",
-    "chai": "~3.5.0",
-    "mocha": "~2.5.3",
-    "grunt-mocha-phantomjs": "~3.0.0",
-    "grunt-contrib-uglify": "0.2.7",
-    "grunt-contrib-watch": "0.3.1",
-    "grunt-noflo-manifest": "0.1.11",
-    "grunt-noflo-browser": "0.1.11"
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
+    "grunt-mocha-phantomjs": "^3.0.0",
+    "grunt-contrib-uglify": "^0.2.7",
+    "grunt-contrib-watch": "^0.3.1",
+    "grunt-noflo-manifest": "^0.1.11",
+    "grunt-noflo-browser": "^0.1.11"
   },
   "noflo": {
     "icon": "random",
