@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "grunt": "^0.4.5",
+    "coffee-script": "^1.10.0",
     "grunt-contrib-coffee": "^0.6.7",
     "grunt-coffeelint": "^0.0.15",
     "grunt-mocha-test": "^0.12.7",
