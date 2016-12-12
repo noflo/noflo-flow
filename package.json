@@ -42,7 +42,7 @@
     "grunt-contrib-uglify": "^0.2.7",
     "grunt-contrib-watch": "^0.3.1",
     "grunt-noflo-manifest": "^0.1.11",
-    "grunt-noflo-browser": "^0.1.11"
+    "grunt-noflo-browser": "^1.0.1"
   },
   "noflo": {
     "icon": "random",
