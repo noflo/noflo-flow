@@ -1,27 +1,33 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  Concat = require '../components/Concat.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  Concat = require 'noflo-flow/components/Concat.js'
+  baseDir = 'noflo-flow'
 
 describe 'Concat component', ->
   g = {}
   inCount = 2
+  loader = null
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/Concat', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.ins = []
+      while inCount
+        sock = noflo.internalSocket.createSocket()
+        g.ins.push sock
+        g.c.inPorts.in.attach sock
+        inCount--
 
-  beforeEach ->
-    g.c = Concat.getComponent()
-
-    g.ins = []
-    while inCount
-      sock = noflo.internalSocket.createSocket()
-      g.ins.push sock
-      g.c.inPorts.in.attach sock
-      inCount--
-
-    g.out = noflo.internalSocket.createSocket()
-    g.c.outPorts.out.attach g.out
+      g.out = noflo.internalSocket.createSocket()
+      g.c.outPorts.out.attach g.out
+      done()
 
   describe 'when instantiated', ->
     it 'should have input ports', ->

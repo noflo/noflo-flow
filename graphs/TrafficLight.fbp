@@ -1,8 +1,0 @@
-# @runtime noflo-nodejs
-EXPORT=INPUT.IN:IN
-EXPORT=OUTPUT.OUT:OUT
-EXPORT=CACHE.READY:READY
-EXPORT=FORK.PORT:ON
-
-Input(core/Merge) OUT -> IN Fork(flow/Fork) OUT -> IN Cache(cache/Cache) OUT -> IN Output(core/Merge)
-Fork() OUT -> IN Output()

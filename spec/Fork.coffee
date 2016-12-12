@@ -1,26 +1,34 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  Fork = require '../components/Fork.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  Fork = require 'noflo-flow/components/Fork.js'
+  baseDir = 'noflo-flow'
 
 describe 'Fork component', ->
   g = {}
 
-  beforeEach ->
-    g.c = Fork.getComponent()
-    g.ins = noflo.internalSocket.createSocket()
-    g.portIns = noflo.internalSocket.createSocket()
-    g.outA = noflo.internalSocket.createSocket()
-    g.outB = noflo.internalSocket.createSocket()
-    g.outC = noflo.internalSocket.createSocket()
-    g.c.inPorts.in.attach g.ins
-    g.c.inPorts.port.attach g.portIns
-    g.c.outPorts.out.attach g.outA
-    g.c.outPorts.out.attach g.outB
-    g.c.outPorts.out.attach g.outC
+  loader = null
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/Fork', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.ins = noflo.internalSocket.createSocket()
+      g.portIns = noflo.internalSocket.createSocket()
+      g.outA = noflo.internalSocket.createSocket()
+      g.outB = noflo.internalSocket.createSocket()
+      g.outC = noflo.internalSocket.createSocket()
+      g.c.inPorts.in.attach g.ins
+      g.c.inPorts.port.attach g.portIns
+      g.c.outPorts.out.attach g.outA
+      g.c.outPorts.out.attach g.outB
+      g.c.outPorts.out.attach g.outC
+      done()
 
   describe 'when instantiated', ->
     it 'should have input ports', ->
