@@ -27,8 +27,7 @@
   "dependencies": {
     "noflo": "0.x >= 0.5",
     "underscore": "~1.8.3",
-    "nohoarder": "~0.0.3",
-    "noflo-cache": "~0.0.3"
+    "nohoarder": "~0.0.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -68,9 +67,7 @@
       "Throttle": "components/Throttle.coffee"
     },
     "graphs": {
-      "BufferUntil": "graphs/BufferUntil.fbp",
-      "Floodgate": "graphs/Floodgate.fbp",
-      "TrafficLight": "graphs/TrafficLight.fbp"
+      "BufferUntil": "graphs/BufferUntil.fbp"
     }
   },
   "scripts": {
