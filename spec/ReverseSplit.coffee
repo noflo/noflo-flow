@@ -1,24 +1,31 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  ReverseSplit = require '../components/ReverseSplit.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  ReverseSplit = require 'noflo-flow/components/ReverseSplit.js'
+  baseDir = 'noflo-flow'
 
 describe 'ReverseSplit component', ->
   g = {}
-
-  beforeEach ->
-    g.c = ReverseSplit.getComponent()
-    g.ins = noflo.internalSocket.createSocket()
-    g.outA = noflo.internalSocket.createSocket()
-    g.outB = noflo.internalSocket.createSocket()
-    g.outC = noflo.internalSocket.createSocket()
-    g.c.inPorts.in.attach g.ins
-    g.c.outPorts.out.attach g.outA
-    g.c.outPorts.out.attach g.outB
-    g.c.outPorts.out.attach g.outC
+  loader = null
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/ReverseSplit', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.ins = noflo.internalSocket.createSocket()
+      g.outA = noflo.internalSocket.createSocket()
+      g.outB = noflo.internalSocket.createSocket()
+      g.outC = noflo.internalSocket.createSocket()
+      g.c.inPorts.in.attach g.ins
+      g.c.outPorts.out.attach g.outA
+      g.c.outPorts.out.attach g.outB
+      g.c.outPorts.out.attach g.outC
+      done()
 
   describe 'when instantiated', ->
     it 'should have input ports', ->

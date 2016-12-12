@@ -1,22 +1,30 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  CollectUntilIdle = require '../components/CollectUntilIdle.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  CollectUntilIdle = require 'noflo-flow/components/CollectUntilIdle.js'
+  baseDir = 'noflo-flow'
 
 describe 'CollectUntilIdle component', ->
   g = {}
 
-  beforeEach ->
-    g.c = CollectUntilIdle.getComponent()
-    g.ins = noflo.internalSocket.createSocket()
-    g.timeout = noflo.internalSocket.createSocket()
-    g.out = noflo.internalSocket.createSocket()
-    g.c.inPorts.in.attach g.ins
-    g.c.inPorts.timeout.attach g.timeout
-    g.c.outPorts.out.attach g.out
+  loader = null
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/CollectUntilIdle', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.ins = noflo.internalSocket.createSocket()
+      g.timeout = noflo.internalSocket.createSocket()
+      g.out = noflo.internalSocket.createSocket()
+      g.c.inPorts.in.attach g.ins
+      g.c.inPorts.timeout.attach g.timeout
+      g.c.outPorts.out.attach g.out
+      done()
 
   describe 'when g.instantiated', ->
     it 'should have input ports', ->

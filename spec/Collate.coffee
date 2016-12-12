@@ -1,27 +1,35 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  Collate = require '../components/Collate.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  Collate = require 'noflo-flow/components/Collate.js'
+  baseDir = 'noflo-flow'
 
 describe 'Collate component', ->
   c = null
   cntl = null
   ins = null
   out = null
-  beforeEach ->
-    c = Collate.getComponent()
-    cntl = noflo.internalSocket.createSocket()
-    ins = []
-    ins.push noflo.internalSocket.createSocket()
-    ins.push noflo.internalSocket.createSocket()
-    ins.push noflo.internalSocket.createSocket()
-    out = noflo.internalSocket.createSocket()
-    c.inPorts.ctlfields.attach cntl
-    c.inPorts.in.attach inSock for inSock in ins
-    c.outPorts.out.attach out
+  loader = null
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/Collate', (err, instance) ->
+      return done err if err
+      c = instance
+      cntl = noflo.internalSocket.createSocket()
+      ins = []
+      ins.push noflo.internalSocket.createSocket()
+      ins.push noflo.internalSocket.createSocket()
+      ins.push noflo.internalSocket.createSocket()
+      out = noflo.internalSocket.createSocket()
+      c.inPorts.ctlfields.attach cntl
+      c.inPorts.in.attach inSock for inSock in ins
+      c.outPorts.out.attach out
+      done()
 
   describe 'Collating a bank statement', ->
     it 'should return the data in the correct order', (done) ->
