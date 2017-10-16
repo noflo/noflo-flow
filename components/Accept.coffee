@@ -11,7 +11,7 @@ exports.getComponent = ->
     description: 'IP to be accepted'
   c.inPorts.add 'reset',
     datatype: 'bang'
-    description: 'Reset the list accepted IP'
+    description: 'Reset the list accepted IPs'
   c.outPorts.add 'out',
     datatype: 'all'
   c.accepts = {}
