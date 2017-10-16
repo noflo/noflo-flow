@@ -9,14 +9,3 @@ to one out port versus another (or not at all).
 
 Feel free to contribute new components and graphs! I'll try to
 incorporate as soon as time allows.
-
-## Usage
-
-### flow/BufferUntil
-
-Buffer all IPs until we're ready, after which point, everything is passed
-through.
-
-* In-port IN: the IPs to receive and cache
-* In-port READY: send any IP to signal that we're ready
-* Out-port OUT: out comes the IPs
