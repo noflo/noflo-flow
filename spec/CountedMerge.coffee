@@ -30,8 +30,8 @@ describe 'CountedMerge component', ->
     c.outPorts.out.detach out
     out = null
 
-  describe 'with a count or 3 and some connections', ->
-    it 'should merge packets from first three connections', (done) ->
+  describe 'with a count or 3 and some streams', ->
+    it 'should merge packets from first three streams', (done) ->
       expected = [
         '< a'
         'DATA a'
@@ -51,9 +51,11 @@ describe 'CountedMerge component', ->
         received.push "DATA #{data}"
       out.on 'endgroup', ->
         received.push '>'
-      out.on 'disconnect', ->
-        chai.expect(received).to.eql expected
-        done()
+        return unless received.length is expected.length
+        setTimeout ->
+          chai.expect(received).to.eql expected
+          done()
+        , 100
 
       threshold.send 3
 

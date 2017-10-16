@@ -1,49 +1,41 @@
 noflo = require "noflo"
-{ CacheStorage } = require "nohoarder"
 
-# @runtime noflo-nodejs
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Like 'core/Merge', but merge up to a specified
+  number of streams."
+  c.inPorts.add 'in',
+    datatype: 'all'
+    description: 'IP to merge'
+  c.inPorts.add 'threshold',
+    datatype: 'int'
+    control: true
+    default: 1
+  c.outPorts.add 'out',
+    datatype: 'all'
 
-class CountedMerge extends noflo.Component
+  c.received = 0
+  c.tearDown = (callback) ->
+    c.received = 0
+    do callback
 
-  description: "Like the normal 'Merge', but merge up to a specified
-  number of connections."
+  c.forwardBrackets = {}
 
-  constructor: ->
-    @count = 0
-    @threshold = 1
-    @cache = new CacheStorage
-
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-        description: 'IP to merge'
-      threshold:
-        datatype: 'number'
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-
-    @inPorts.threshold.on "data", (@threshold) =>
-
-    @inPorts.in.on "connect", =>
-      @count++
-      @cache.connect @count
-
-    @inPorts.in.on "begingroup", (group) =>
-      @cache.beginGroup group, @count
-
-    @inPorts.in.on "data", (data) =>
-      @cache.send data, @count
-
-    @inPorts.in.on "endgroup", (group) =>
-      @cache.endGroup @count
-
-    @inPorts.in.on "disconnect", =>
-      @cache.disconnect @count if @count > 0
-
-      if @count >= @threshold
-        @cache.flushCache @outPorts.out, key for key in [1..@count]
-        @outPorts.out.disconnect()
-        @count = 0
-
-exports.getComponent = -> new CountedMerge
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    return if input.attached('threshold') and not input.hasData 'threshold'
+    if input.hasData 'threshold'
+      threshold = input.getData 'threshold'
+    else
+      threshold = 1
+    packets = input.getStream 'in'
+    if c.received < threshold
+      # We can still send
+      for packet in packets
+        output.send
+          out: packet
+    else
+      # Over threshold, drop packets
+      packet.drop() for packet in packets
+    c.received++
+    output.done()
