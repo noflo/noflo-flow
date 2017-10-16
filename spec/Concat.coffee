@@ -74,13 +74,5 @@ describe 'Concat component', ->
         chai.expect(data).to.deep.equal 'world'
         done()
       
-    g.ins[0].connect()
-    g.ins[1].connect()
-    # This packet will be lost because it doesn't have a pair
-    # and we disconnect
-    g.ins[1].send 'foo'
-    g.ins[0].disconnect()
-    g.ins[1].disconnect()
-    g.ins[0].connect()
     g.ins[1].send 'world'
     g.ins[0].send 'hello'
