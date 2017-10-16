@@ -32,6 +32,7 @@ describe 'Collate component', ->
 
   describe 'Collating a bank statement', ->
     it 'should return the data in the correct order', (done) ->
+      @timeout 4000
       original = [
         'branch,account,date,amount,DEP/WD'
         '1,3,1992/3/16,9.26,WD'
