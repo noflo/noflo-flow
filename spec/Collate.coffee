@@ -97,7 +97,7 @@ describe 'Collate component', ->
       out.on 'endgroup', (group) ->
         return if group is null
         received.push "> #{group}"
-      out.on 'disconnect', ->
+        return unless received.length is expected.length
         chai.expect(received).to.eql expected
         done()
 
