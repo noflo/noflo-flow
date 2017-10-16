@@ -1,24 +1,32 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  Reorder = require '../components/Reorder.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  Reorder = require 'noflo-core/components/Reorder.js'
+  baseDir = 'noflo-flow'
 
 describe 'Reorder component', ->
+  loader = null
   g = {}
 
-  beforeEach ->
-    g.c = Reorder.getComponent()
-    g.insA = noflo.internalSocket.createSocket()
-    g.insB = noflo.internalSocket.createSocket()
-    g.insC = noflo.internalSocket.createSocket()
-    g.outA = noflo.internalSocket.createSocket()
-    g.outB = noflo.internalSocket.createSocket()
-    g.outC = noflo.internalSocket.createSocket()
-    g.c.inPorts.in.attach g.insA
-    g.c.outPorts.out.attach g.outA
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/Reorder', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.insA = noflo.internalSocket.createSocket()
+      g.insB = noflo.internalSocket.createSocket()
+      g.insC = noflo.internalSocket.createSocket()
+      g.outA = noflo.internalSocket.createSocket()
+      g.outB = noflo.internalSocket.createSocket()
+      g.outC = noflo.internalSocket.createSocket()
+      g.c.inPorts.in.attach g.insA
+      g.c.outPorts.out.attach g.outA
+      done()
 
   describe 'when instantiated', ->
     it 'should have input ports', ->
@@ -33,18 +41,27 @@ describe 'Reorder component', ->
     g.c.outPorts.out.attach g.outB
     g.c.outPorts.out.attach g.outC
 
-    count = 0
+    expected = [
+      '3 c'
+      '2 b'
+      '1 a'
+    ]
+    received = []
 
     g.outA.on "data", (data) ->
-      chai.expect(++count).to.equal 3
-      chai.expect(data).to.equal "a"
+      received.push "1 #{data}"
+      return unless received.length is expected.length
+      chai.expect(received).to.eql expected
+      done()
     g.outB.on "data", (data) ->
-      chai.expect(++count).to.equal 2
-      chai.expect(data).to.equal "b"
+      received.push "2 #{data}"
+      return unless received.length is expected.length
+      chai.expect(received).to.eql expected
+      done()
     g.outC.on "data", (data) ->
-      chai.expect(++count).to.equal 1
-      chai.expect(data).to.equal "c"
-    g.outA.on "disconnect", ->
+      received.push "3 #{data}"
+      return unless received.length is expected.length
+      chai.expect(received).to.eql expected
       done()
 
     g.insA.connect()
@@ -59,23 +76,29 @@ describe 'Reorder component', ->
     g.insC.send("c")
     g.insC.disconnect()
 
-  it "the number of ports to wait for disconnection until forwarding takes place is the lessor of the number of inports and the number of g.outports", (done) ->
+  it "the number of ports to wait for stream end until forwarding takes place is the lessor of the number of inports and the number of g.outports", (done) ->
     g.c.inPorts.in.attach g.insB
     g.c.outPorts.out.attach g.outB
     g.c.outPorts.out.attach g.outC
 
-    count = 0
+    expected = [
+      '2 b'
+      '1 a'
+    ]
+    received = []
 
     g.outA.on "data", (data) ->
-      chai.expect(++count).to.equal 2
-      chai.expect(data).to.equal "a"
-    g.outB.on "data", (data) ->
-      chai.expect(++count).to.equal 1
-      chai.expect(data).to.equal "b"
-    g.outC.on "data", (data) ->
-      chai.expect(false).to.be.ok
-    g.outA.on "disconnect", ->
+      received.push "1 #{data}"
+      return unless received.length is expected.length
+      chai.expect(received).to.eql expected
       done()
+    g.outB.on "data", (data) ->
+      received.push "2 #{data}"
+      return unless received.length is expected.length
+      chai.expect(received).to.eql expected
+      done()
+    g.outC.on "data", (data) ->
+      done new Error "C received data unlike expected"
 
     g.insA.connect()
     g.insA.send("a")

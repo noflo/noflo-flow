@@ -1,67 +1,41 @@
 noflo = require "noflo"
-_ = require "underscore"
 
-class Fork extends noflo.Component
-
-  description: "Send the port number to 'PORT' to set where to direct IPs. It
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Send the port number to 'PORT' to set where to direct IPs. It
   acts as a 'Split' by default, sending IPs to every out-port."
-
-  constructor: ->
-    @indexes = []
-
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-        description: 'IPs to forward'
-      port:
-        datatype: 'number'
-        description: 'Number of ports to forward IPs to'
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        addressable: true
-
-    @inPorts.port.on "connect", =>
-      @indexes = []
-
-    @inPorts.port.on "data", (index) =>
-      index = parseInt index
-      @indexes.push index if _.isNumber(index) and not isNaN(index)
-
-    @inPorts.port.on "disconnect", =>
-      # De-duplicate
-      @indexes = _.uniq @indexes
-
-    @inPorts.in.on "begingroup", (group) =>
-      if @indexes.length > 0
-        for index in @indexes
-          @outPorts.out.beginGroup group, index
-      else
-        for index in @outPorts.out.listAttached()
-          @outPorts.out.beginGroup group, idx
-
-    @inPorts.in.on "data", (data) =>
-      if @indexes.length > 0
-        for index in @indexes
-          @outPorts.out.send data, index
-      else
-        for index in @outPorts.out.listAttached()
-          @outPorts.out.send data, index
-
-    @inPorts.in.on "endgroup", (group) =>
-      if @indexes.length > 0
-        for index in @indexes
-          @outPorts.out.endGroup index
-      else
-        for index in @outPorts.out.listAttached()
-          @outPorts.out.endGroup index
-
-    @inPorts.in.on "disconnect", =>
-      if @indexes.length > 0
-        for index in @indexes
-          @outPorts.out.disconnect index
-      else
-        for index in @outPorts.out.listAttached()
-          @outPorts.out.disconnect index
-
-exports.getComponent = -> new Fork
+  c.inPorts.add 'in',
+    datatype: 'all'
+    description: 'IPs to forward'
+  c.inPorts.add 'port',
+    datatype: 'number'
+    description: 'Number of ports to forward IPs to'
+  c.outPorts.add 'out',
+    datatype: 'all'
+    addressable: true
+  c.indexes = []
+  c.tearDown = (callback) ->
+    c.indexes = []
+    do callback
+  c.process (input, output) ->
+    if input.hasStream 'port'
+      # New set of port indexes to work with
+      ports = input.getStream('port').filter (ip) -> ip.type is 'data'
+      c.indexes = []
+      for port in ports
+        index = parseInt port.data
+        continue if c.indexes.indexOf(index) isnt -1
+        c.indexes.push index
+      output.done()
+      return
+    return unless input.hasData 'in'
+    data = input.getData 'in'
+    if c.indexes.length is 0
+      indexes = c.outPorts.out.listAttached()
+    else
+      indexes = c.indexes.slice 0
+    for idx in indexes
+      output.send
+        out: new noflo.IP 'data', data,
+          index: idx
+    output.done()

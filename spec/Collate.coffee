@@ -27,7 +27,6 @@ describe 'Collate component', ->
       ins.push noflo.internalSocket.createSocket()
       out = noflo.internalSocket.createSocket()
       c.inPorts.ctlfields.attach cntl
-      c.inPorts.in.attach inSock for inSock in ins
       c.outPorts.out.attach out
       done()
 
@@ -87,6 +86,7 @@ describe 'Collate component', ->
       received = []
       groups = []
       out.on 'begingroup', (group) ->
+        return if group is null
         groups.push group
         received.push "< #{group}"
       out.on 'data', (data) ->
@@ -94,8 +94,9 @@ describe 'Collate component', ->
         for key, val of data
           values.push val
         received.push values.join ','
-      out.on 'endgroup', ->
-        received.push "> #{groups.pop()}"
+      out.on 'endgroup', (group) ->
+        return if group is null
+        received.push "> #{group}"
       out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()
@@ -110,7 +111,8 @@ describe 'Collate component', ->
       original.sort -> 0.5 - Math.random()
 
       # Send the beginning of transmission to all inputs
-      inport.connect() for inport in ins
+      c.inPorts.in.attach inSock for inSock in ins
+      inport.beginGroup null for inport in ins
 
       for entry,index in original
         # Parse comma-separated
@@ -124,13 +126,13 @@ describe 'Collate component', ->
         randomConnection = Math.floor Math.random() * ins.length
         ins[randomConnection].send entryObj
 
-        # Once we're close to the end we disconnect one of the inputs
+        # Once we're close to the end we end stream on one of the inputs
         if index is original.length - 3
           disconnecting = ins.pop()
-          disconnecting.disconnect()
+          disconnecting.endGroup()
 
       # Finally disconnect all
-      inPort.disconnect() for inPort in ins
+      inport.endGroup() for inport in ins
 
   describe 'Collating space-limited files', ->
     it 'should return the data in the correct order', (done) ->
@@ -144,11 +146,16 @@ describe 'Collate component', ->
       detail = fs.readFileSync path.resolve(__dirname, 'fixtures/collate/01detail.txt'), 'utf-8'
       output = fs.readFileSync path.resolve(__dirname, 'fixtures/collate/01output.txt'), 'utf-8'
       received = []
+      brackets = []
       out.on 'begingroup', (group) ->
+        return if group is null
         received.push '===> Open Bracket\r'
+        brackets.push group
       out.on 'data', (data) ->
         received.push "#{data[0]}#{data[1]}#{data[2]}   #{data[3]}\r"
-      out.on 'endgroup', ->
+      out.on 'endgroup', (group) ->
+        return if group is null
+        brackets.pop()
         received.push '===> Close Bracket\r'
       out.on 'disconnect', ->
         received.push 'Run complete.\r\n'
@@ -159,12 +166,16 @@ describe 'Collate component', ->
       cntl.send '0,1,2'
 
       # Send lines
+      c.inPorts.in.attach ins[0]
+      c.inPorts.in.attach ins[1]
+      ins[0].beginGroup 'file'
+      ins[1].beginGroup 'file'
       masterLines = master.split "\n"
       for line in masterLines
         matched = line.match /([\d]{3})([A-Z]{2})([\d]{5})   ([A-Z])/
         continue unless matched
         matched.shift()
-        ins[1].send matched
+        ins[0].send matched
       detailLines = detail.split "\n"
       for line in detailLines
         matched = line.match /([\d]{3})([A-Z]{2})([\d]{5})   ([A-Z])/
@@ -173,5 +184,5 @@ describe 'Collate component', ->
         ins[1].send matched
 
       # All done
-      ins[0].disconnect()
-      ins[1].disconnect()
+      ins[0].endGroup()
+      ins[1].endGroup()

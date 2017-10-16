@@ -18,7 +18,7 @@ sortByControlFields = (fields, a, b) ->
 
   # Traverse the fields until you find one to sort by
   for field in fields
-    order = sort a.payload[field], b.payload[field]
+    order = sort a.data[field], b.data[field]
     return order unless order is 0
 
   # All fields were the same, send in order of appearance
@@ -27,75 +27,96 @@ sortByControlFields = (fields, a, b) ->
   1
 
 # Sending the collated objects to the output port together with bracket IPs
-sendWithGroups = (packets, fields, port) ->
+sendWithGroups = (packets, fields, output) ->
   previous = null
   for packet in packets
-
     # For the first packet send a bracket IP for each control field
-    port.beginGroup field for field in fields unless previous
+    for field in fields
+      break if previous
+      output.send
+        out: new noflo.IP 'openBracket', field
 
     # For subsequent packets send ending and opening brackets for fields that
     # are different
     if previous
       for field, idx in fields
-        continue if packet.payload[field] is previous.payload[field]
+        continue if packet.data[field] is previous.data[field]
         # Differing field found, close this bracket and all following ones
         differing = fields.slice idx
-        port.endGroup() for f in differing
-        port.beginGroup f for f in differing
+        closes = differing.slice(0)
+        closes.reverse()
+        for f in closes
+          output.send
+            out: new noflo.IP 'closeBracket', f
+        for f in differing
+          output.send
+            out: new noflo.IP 'openBracket', f
         break
 
     # Send it out
-    port.send packet.payload
+    output.send
+      out: packet
 
     # Provide for comparison to the next one
     previous = packet
 
   # Last packet sent, send closing brackets
-  port.endGroup() for field in fields
-  # Send end-of-transmission
-  port.disconnect()
+  closes = fields.slice(0)
+  closes.reverse()
+  for field in closes
+    output.send
+      out: new noflo.IP 'closeBracket', field
 
 exports.getComponent = ->
   c = new noflo.Component
   c.description = 'Collate two or more streams, based on
   a list of control field lengths'
   c.icon = 'sort-amount-asc'
-
-  # Array holding out control fields
-  fields = []
-
   # Inport for accepting a comma-separated list of control fields
   c.inPorts.add 'ctlfields',
     datatype: 'string'
     description: 'Comma-separated list of object keys to collate by'
-    process: (event, payload) ->
-      return unless event is 'data'
-      fields = payload.split ','
-
+    control: true
   # Here we accept packets from 0-n connections that will eventually be collated
   c.inPorts.add 'in',
     description: 'Objects to collate'
     datatype: 'object'
-    buffered: true
-    process: (event) ->
-      # To be able to sort everything we must wait until we have all the data
-      return unless event is 'disconnect'
-      # Make sure every upstream node has finished sending
-      return if c.inPorts.in.isConnected()
-      # Receive the packets
-      packets = c.inPorts.in.buffer.filter (packet) -> packet.event is 'data'
-      # Sort them by control fields if there are any
-      original = packets.slice 0
-      packets.sort sortByControlFields.bind original, fields
-      # Send them out
-      sendWithGroups packets, fields, c.outPorts.out
-      # Prepare for the next set to collate
-      c.inPorts.in.prepareBuffer()
-
+    addressable: true
   # We send the packets in collated order with groups to the output port
   c.outPorts.add 'out',
     description: 'Objects in collated order'
     datatype: 'object'
 
-  c
+  c.forwardBrackets = {}
+
+  c.process (input, output) ->
+    # We want to have a list of fields to collate by
+    return unless input.hasData 'ctlfields'
+    # To be able to sort everything we must wait until we have all the data
+    return unless input.attached('in').length
+    indexesWithStreams = input.attached('in').filter (idx) ->
+      input.hasStream ['in', idx]
+    return unless indexesWithStreams.length is input.attached('in').length
+
+    fields = input.getData 'ctlfields'
+    if typeof fields is 'string'
+      fields = fields.split ','
+
+    # Receive the packets
+    packets = []
+    for idx in indexesWithStreams
+      stream = input.getStream(['in', idx]).filter (ip) ->
+
+        ip.type is 'data'
+      packets = packets.concat stream
+    # Sort them by control fields if there are any
+    original = packets.slice 0
+    packets.sort sortByControlFields.bind original, fields
+    output.send
+      out: new noflo.IP 'openBracket', null
+    # Send them out
+    sendWithGroups packets, fields, output
+    # Send end-of-transmission
+    output.send
+      out: new noflo.IP 'closeBracket', null
+    output.done()

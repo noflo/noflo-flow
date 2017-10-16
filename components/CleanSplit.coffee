@@ -1,48 +1,18 @@
 noflo = require "noflo"
-_ = require "underscore"
-{ CacheStorage } = require "nohoarder"
 
-# @runtime noflo-nodejs
-
-class CleanSplit extends noflo.Component
-
-  description: "Like the generic split, except this splits the incoming
-  connection one by one to each port, so a connection must disconnect
-  first before the next port receives the connection. Think of it as
-  serializing splits."
-
-  constructor: ->
-    @cache = new CacheStorage
-
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        addressable: true
-
-    @inPorts.in.on "connect", =>
-      @cache.connect()
-
-    @inPorts.in.on "begingroup", (group) =>
-      @cache.beginGroup(group)
-
-    @inPorts.in.on "data", (data) =>
-      @cache.send(data)
-
-    @inPorts.in.on "endgroup", (group) =>
-      @cache.endGroup()
-
-    @inPorts.in.on "disconnect", =>
-      @cache.disconnect()
-      @flush()
-
-  flush: ->
-    for index in [0...@outPorts.out.sockets.length]
-      @outPorts.out.connect index
-      @cache.flushCache @outPorts.out, null, index
-      @outPorts.out.disconnect index
-    @cache.reset()
-
-exports.getComponent = -> new CleanSplit
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'expand'
+  c.description = 'Like core/Split, but only begins sending at end of a stream'
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.hasStream 'in'
+    stream = input.getStream 'in'
+    for packet in stream
+      output.send
+        out: packet
+    output.done()

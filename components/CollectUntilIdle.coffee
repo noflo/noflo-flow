@@ -1,63 +1,44 @@
 noflo = require 'noflo'
 
-class CollectUntilIdle extends noflo.Component
-  description: 'Collect packets and send them when input stops after a given
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = 'Collect packets and send them when input stops after a given
   timeout'
+  c.inPorts.add 'in',
+    datatype: 'all'
+    description: 'IPs to collect until a timeout'
+  c.inPorts.add 'timeout',
+    datatype: 'number'
+    description: 'Amount of time to hold IPs for in milliseconds'
+    default: 300
+    control: true
+  c.outPorts.add 'out',
+    datatype: 'all'
+    description: 'IPs collected until the timeout'
+  c.timeout = null
+  clear = ->
+    return unless c.timeout
+    clearTimeout c.timeout.timeout
+    c.timeout.ctx.deactivate()
+  c.tearDown = (callback) ->
+    do clear
+    do callback
+  c.process (input, output, context) ->
+    return unless input.hasData 'in'
+    return if input.attached('timeout') and not input.hasData('timeout')
+    if input.hasData 'timeout'
+      timeout = parseInt input.getData 'timeout'
+    else
+      timeout = 300
 
-  constructor: ->
-    @milliseconds = 500
-    @data = []
-    @groups = []
-    @timeout = null
+    do clear
 
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-        description: 'IPs to collect until a timeout'
-      timeout:
-        datatype: 'number'
-        description: 'Amount of time to hold IPs for in milliseconds'
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        description: 'IPs collected until the timeout'
-
-    @inPorts.timeout.on 'data', (data) =>
-      @milliseconds = parseInt data
-
-    @inPorts.in.on 'connect', =>
-      @outPorts.out.connect()
-
-    @inPorts.in.on 'begingroup', (group) =>
-      @groups.push group
-
-    @inPorts.in.on 'data', (data) =>
-      @data.push
-        data: data
-        groups: @groups.slice 0
-      do @refresh
-
-    @inPorts.in.on 'endgroup', =>
-      @groups.pop()
-
-    @inPorts.in.on 'disconnect', =>
-      do @refresh
-
-  refresh: ->
-    clearTimeout @timeout if @timeout
-    @timeout = setTimeout =>
-      do @send
-    , @milliseconds
-
-  send: ->
-    @sendData data for data in @data
-    @outPorts.out.disconnect()
-
-  sendData: (data) ->
-    for group in data.groups
-      @outPorts.out.beginGroup group
-    @outPorts.out.send data.data
-    for group in data.groups
-      @outPorts.out.endGroup()
-
-exports.getComponent = -> new CollectUntilIdle
+    c.timeout =
+      ctx: context
+      timeout: setTimeout ->
+        while input.hasData 'in'
+          packet = input.getData 'in'
+          output.send
+            out: packet
+        output.done()
+      , timeout

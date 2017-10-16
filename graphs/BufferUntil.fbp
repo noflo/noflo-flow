@@ -1,9 +1,0 @@
-# @runtime noflo-nodejs
-EXPORT=TRAFFICLIGHT.IN:IN
-EXPORT=TRAFFICLIGHT.OUT:OUT
-EXPORT=READY.IN:READY
-
-'0' -> IN Signal(core/Merge)
-'1' -> STRING ReadySignal(strings/SendString)
-Ready(core/Split) OUT -> READY TrafficLight(flow/TrafficLight)
-Ready() OUT -> IN ReadySignal() OUT -> IN Signal() OUT ->  ON TrafficLight

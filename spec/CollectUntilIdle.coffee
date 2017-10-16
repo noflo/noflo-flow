@@ -34,14 +34,58 @@ describe 'CollectUntilIdle component', ->
     it 'should have an output port', ->
       chai.expect(g.c.outPorts.out).to.be.an 'object'
 
-  it "test no groups", (done) ->
-    output = []
-    g.out.on "data", (data) ->
-      output.push data
-    g.out.on "disconnect", ->
-      chai.expect(output).to.deep.equal ["a","b","c"]
-      done()
-    g.ins.send "a"
-    g.ins.send "b"
-    g.ins.send "c"
-    g.ins.disconnect()
+  describe 'without groups', ->
+    it "should send packets out after timeout", (done) ->
+      expected = [
+        'a'
+        'b'
+        'c'
+      ]
+      output = []
+      g.out.on "begingroup", (group) ->
+        output.push "< #{group}"
+      g.out.on "data", (data) ->
+        output.push data
+        return unless output.length is expected.length
+        chai.expect(output).to.eql expected
+        done()
+      g.out.on "endgroup", ->
+        output.push '>'
+        return unless output.length is expected.length
+        chai.expect(output).to.eql expected
+        done()
+      g.timeout.send 300
+      g.ins.send "a"
+      g.ins.send "b"
+      g.ins.send "c"
+      g.ins.disconnect()
+
+  describe 'with groups', ->
+    it "should send packets out after timeout", (done) ->
+      expected = [
+        '< foo'
+        'a'
+        'b'
+        'c'
+        '>'
+      ]
+      output = []
+      g.out.on "begingroup", (group) ->
+        output.push "< #{group}"
+      g.out.on "data", (data) ->
+        output.push data
+        return unless output.length is expected.length
+        chai.expect(output).to.eql expected
+        done()
+      g.out.on "endgroup", ->
+        output.push '>'
+        return unless output.length is expected.length
+        chai.expect(output).to.eql expected
+        done()
+      g.timeout.send 300
+      g.ins.beginGroup 'foo'
+      g.ins.send "a"
+      g.ins.send "b"
+      g.ins.send "c"
+      g.ins.endGroup()
+      g.ins.disconnect()
