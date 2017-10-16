@@ -1,62 +1,39 @@
 noflo = require "noflo"
-_ = require "underscore"
-{ CacheStorage } = require "nohoarder"
 
-# @runtime noflo-nodejs
-
-class Reorder extends noflo.Component
-
-  description: "Connect to some number of inports and some number of
-  outports. All packets are stored and when the lessor of the number of
-  inports or of outports is reached, flush the packets in *reverse*
-    order."
-
-  constructor: ->
-    @sockets = []
-    @cache = new CacheStorage
-
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-        addressable: true
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        addressable: true
-
-    @inPorts.in.on "connect", (socket) =>
-      @socIndex = @sockets.indexOf socket
-      if @socIndex < 0
-        @socIndex = @sockets.length
-        @sockets.push socket
-      @cache.connect @socIndex
-
-    @inPorts.in.on "begingroup", (group) =>
-      @cache.beginGroup group, @socIndex
-
-    @inPorts.in.on "data", (data) =>
-      @cache.send data, @socIndex
-
-    @inPorts.in.on "endgroup", (group) =>
-      @cache.endGroup @socIndex
-
-    @inPorts.in.on "disconnect", =>
-      @cache.disconnect @socIndex
-      @flush()
-
-  flush: ->
-    threshold = _.min [@inPorts.in.sockets.length, @outPorts.out.sockets.length]
-    current = @cache.getCacheKeys().length
-
-    # Flush in reverse order if we have enough connections
-    if current >= threshold
-      for i in [threshold-1..0]
-        socket = @inPorts.in.sockets[i]
-        socIndex = @sockets.indexOf socket
-        @outPorts.out.connect i
-        a = @cache.flushCache @outPorts.out, socIndex, i
-        @outPorts.out.disconnect i
-
-      @sockets = []
-
-exports.getComponent = -> new Reorder
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "Send packets in to outport indexes in reverse order
+   when matching number of inport indexes have received data to attached
+   outports"
+  c.inPorts.add 'in',
+    datatype: 'all'
+    addressable: true
+  c.outPorts.add 'out',
+    datatype: 'all'
+    addressable: true
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    indexesWithStreams = input.attached('in').filter (idx) ->
+      input.hasStream ['in', idx]
+    attached = c.outPorts.out.listAttached().slice 0
+    expectedStreams = attached.length
+    if input.attached('in').length < attached.length
+      # Fewer attached inputs than outputs, use their number
+      expectedStreams = input.attached('in').length
+      attached = attached.slice 0, expectedStreams
+    return if indexesWithStreams.length < expectedStreams
+    streams = []
+    for idx in indexesWithStreams
+      streams.push input.getStream ['in', idx]
+    streams.reverse()
+    attached.reverse()
+    for outIdx in attached
+      continue unless streams.length
+      stream = streams.shift()
+      for packet in stream
+        output.send new noflo.IP packet.type, packet.data,
+          index: outIdx
+          datatype: packet.datatype
+          schema: packet.schema
+          clonable: packet.clonable
+    output.done()
