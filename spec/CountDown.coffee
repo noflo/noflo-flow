@@ -29,12 +29,13 @@ describe 'CountDown component', ->
   beforeEach ->
     out = noflo.internalSocket.createSocket()
     c.outPorts.out.attach out
-  afterEach ->
+  afterEach (done) ->
     c.outPorts.out.detach out
     out = null
+    c.shutdown done
 
   describe 'with a number to count down from', ->
-    it 'should count each disconnect', (done) ->
+    it 'should count each packet', (done) ->
       received = 0
       out.on 'data', (data) ->
         chai.expect(data).to.be.a 'null'
@@ -44,9 +45,12 @@ describe 'CountDown component', ->
         done()
 
       count.send 2
+      repeat.send true
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
 
   describe 'when set to "no repeat" mode', ->
@@ -62,10 +66,14 @@ describe 'CountDown component', ->
       repeat.send false
       count.send 2
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
       ins.connect()
+      ins.send 'packet'
       ins.disconnect()
