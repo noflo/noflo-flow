@@ -1,28 +1,36 @@
 noflo = require 'noflo'
 
 unless noflo.isBrowser()
-  chai = require 'chai' unless chai
-  CleanDisconnect = require '../components/CleanDisconnect.coffee'
+  chai = require 'chai'
+  path = require 'path'
+  baseDir = path.resolve __dirname, '../'
 else
-  CleanDisconnect = require 'noflo-core/components/CleanDisconnect.js'
+  baseDir = 'noflo-flow'
 
 describe 'CleanDisconnect component', ->
   g = {}
+  loader = null
 
-  beforeEach ->
-    g.c = CleanDisconnect.getComponent()
-    g.insA = noflo.internalSocket.createSocket()
-    g.insB = noflo.internalSocket.createSocket()
-    g.insC = noflo.internalSocket.createSocket()
-    g.outA = noflo.internalSocket.createSocket()
-    g.outB = noflo.internalSocket.createSocket()
-    g.outC = noflo.internalSocket.createSocket()
-    g.c.inPorts.in.attach g.insA
-    g.c.inPorts.in.attach g.insB
-    g.c.inPorts.in.attach g.insC
-    g.c.outPorts.out.attach g.outA
-    g.c.outPorts.out.attach g.outB
-    g.c.outPorts.out.attach g.outC
+  before ->
+    loader = new noflo.ComponentLoader baseDir
+  beforeEach (done) ->
+    @timeout 4000
+    loader.load 'flow/CleanDisconnect', (err, instance) ->
+      return done err if err
+      g.c = instance
+      g.insA = noflo.internalSocket.createSocket()
+      g.insB = noflo.internalSocket.createSocket()
+      g.insC = noflo.internalSocket.createSocket()
+      g.outA = noflo.internalSocket.createSocket()
+      g.outB = noflo.internalSocket.createSocket()
+      g.outC = noflo.internalSocket.createSocket()
+      g.c.inPorts.in.attach g.insA
+      g.c.inPorts.in.attach g.insB
+      g.c.inPorts.in.attach g.insC
+      g.c.outPorts.out.attach g.outA
+      g.c.outPorts.out.attach g.outB
+      g.c.outPorts.out.attach g.outC
+      done()
 
   describe 'when g.instantiated', ->
     it 'should have input ports', ->

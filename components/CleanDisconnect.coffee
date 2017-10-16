@@ -1,52 +1,26 @@
 noflo = require "noflo"
-_ = require "underscore"
-{ CacheStorage } = require "nohoarder"
 
-# @runtime noflo-nodejs
-
-class CleanDisconnect extends noflo.Component
-
-  description: "when several streams are nested through the array
+exports.getComponent = ->
+  c = new noflo.Component
+  c.description = "when several streams are nested through the array
   in-port (i.e. a connect through one of the ports before there is a
   disconnect), separate the streams into distinct streams with no
   overlapping"
-
-  constructor: ->
-    @cache = new CacheStorage
-    @count = 0
-
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-        addressable: true
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        addressable: true
-
-    @inPorts.in.on "connect", (port, index) =>
-      @cache.connect index
-      @count++
-
-    @inPorts.in.on "begingroup", (group, index) =>
-      @cache.beginGroup group, index
-
-    @inPorts.in.on "data", (data, index) =>
-      @cache.send data, index
-
-    @inPorts.in.on "endgroup", (group, index) =>
-      @cache.endGroup index
-
-    @inPorts.in.on "disconnect", (port, index) =>
-      @cache.disconnect index
-      @count--
-      @flush() if @count is 0
-
-  flush: ->
-    for index in [0...@outPorts.out.sockets.length]
-      @outPorts.out.connect index
-      @cache.flushCache @outPorts.out, index, index
-      @outPorts.out.disconnect index
-    @cache.reset()
-
-exports.getComponent = -> new CleanDisconnect
+  c.inPorts.add 'in',
+    datatype: 'all'
+    addressable: true
+  c.outPorts.add 'out',
+    datatype: 'all'
+    addressable: true
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    indexesWithStreams = input.attached('in').filter (idx) ->
+      input.hasStream ['in', idx]
+    return unless indexesWithStreams.length
+    indexesWithStreams.forEach (idx) ->
+      stream = input.getStream ['in', idx]
+      for packet in stream
+        packet.index = idx
+        output.send
+          out: packet
+    output.done()
