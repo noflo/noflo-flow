@@ -1,40 +1,26 @@
 noflo = require "noflo"
-_ = require "underscore"
 
-class ReverseSplit extends noflo.Component
-
-  description: "Like Split, expect the last port gets forwarded packets first"
-
-  constructor: ->
-    @inPorts = new noflo.InPorts
-      in:
-        datatype: 'all'
-    @outPorts = new noflo.OutPorts
-      out:
-        datatype: 'all'
-        addressable: true
-
-    @inPorts.in.on "connect", =>
-      @portCount = @outPorts.out.sockets.length
-      @forward "connect"
-
-    @inPorts.in.on "begingroup", (group) =>
-      @forward "beginGroup", group
-
-    @inPorts.in.on "data", (data) =>
-      @forward "send", data
-
-    @inPorts.in.on "endgroup", (group) =>
-      @forward "endGroup"
-
-    @inPorts.in.on "disconnect", =>
-      @forward "disconnect"
-
-  forward: (operation, packet) ->
-    for i in [@portCount-1..0]
-      if operation is "beginGroup" or operation is "send"
-        @outPorts.out[operation] packet, i
-      else
-        @outPorts.out[operation] i
-
-exports.getComponent = -> new ReverseSplit
+exports.getComponent = ->
+  c = new noflo.Component
+  c.icon = 'expand'
+  c.description = "Like core/Split, expect the last port gets forwarded
+   packets first"
+  c.inPorts.add 'in',
+    datatype: 'all'
+  c.outPorts.add 'out',
+    datatype: 'all'
+    addressable: true
+  c.forwardBrackets = {}
+  c.process (input, output) ->
+    return unless input.has 'in'
+    packet = input.get 'in'
+    attached = c.outPorts.out.listAttached()
+    attached.reverse()
+    for idx in attached
+      output.send
+        out: new noflo.IP packet.type, packet.data,
+          index: idx
+          datatype: packet.datatype
+          schema: packet.schema
+          clonable: packet.clonable
+    output.done()
