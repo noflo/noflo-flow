@@ -32,7 +32,6 @@ describe 'Collate component', ->
 
   describe 'Collating a bank statement', ->
     it 'should return the data in the correct order', (done) ->
-      @timeout 4000
       original = [
         'branch,account,date,amount,DEP/WD'
         '1,3,1992/3/16,9.26,WD'
@@ -87,8 +86,8 @@ describe 'Collate component', ->
       received = []
       groups = []
       out.on 'begingroup', (group) ->
-        return if group is null
         groups.push group
+        return if group is null
         received.push "< #{group}"
       out.on 'data', (data) ->
         values = []
@@ -96,9 +95,10 @@ describe 'Collate component', ->
           values.push val
         received.push values.join ','
       out.on 'endgroup', (group) ->
+        groups.pop()
         return if group is null
         received.push "> #{group}"
-        return unless received.length is expected.length
+      out.on 'disconnect', ->
         chai.expect(received).to.eql expected
         done()
 
