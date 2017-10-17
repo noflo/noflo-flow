@@ -56,7 +56,7 @@ describe 'All component', ->
         done()
       ins[1].send 123
       ins[0].send 'hello world'
-    it 'should support multiple packets in input data', (done) ->
+    it 'should support a stream in input data', (done) ->
       errOut.on 'data', done
       out.on 'data', (data) ->
         chai.expect(data).to.eql [
@@ -64,12 +64,30 @@ describe 'All component', ->
           [123, 456]
         ]
         done()
+      ins[1].send new noflo.IP 'openBracket', null,
+        scope: 0
       ins[1].send new noflo.IP 'data', 123,
         scope: 0
       ins[1].send new noflo.IP 'data', 456,
         scope: 0
+      ins[1].send new noflo.IP 'closeBracket', null,
+        scope: 0
       ins[0].send new noflo.IP 'data', 'hello world',
         scope: 0
+    it 'should only use first stream from input data', (done) ->
+      errOut.on 'data', done
+      out.on 'data', (data) ->
+        chai.expect(data).to.eql [
+          'hello world'
+          123
+        ]
+        done()
+      ins[1].send new noflo.IP 'data', 123,
+        scope: 3
+      ins[1].send new noflo.IP 'data', 456,
+        scope: 3
+      ins[0].send new noflo.IP 'data', 'hello world',
+        scope: 3
     it 'should send results by scope', (done) ->
       expected = [
         scope: 2

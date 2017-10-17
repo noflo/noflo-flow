@@ -65,6 +65,8 @@ exports.getComponent = ->
     results = c.pending[input.scope].results
     indexesWithStreams.forEach (idx) ->
       stream = input.getStream(['in', idx]).filter (ip) -> ip.type is 'data'
+      # If this connection already sent, disregard the new stream
+      return if results[idx]
       # Add to results
       results[idx] = [] unless results[idx]
       results[idx] = results[idx].concat stream
