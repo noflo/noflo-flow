@@ -25,7 +25,7 @@ exports.getComponent = ->
     do callback
   c.process (input, output, context) ->
     return unless input.hasData 'in'
-    return if input.attached('timeout') and not input.hasData('timeout')
+    return if input.attached('timeout').length and not input.hasData('timeout')
     if input.hasData 'timeout'
       timeout = parseInt input.getData 'timeout'
     else
