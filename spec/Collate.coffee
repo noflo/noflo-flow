@@ -86,8 +86,8 @@ describe 'Collate component', ->
       received = []
       groups = []
       out.on 'begingroup', (group) ->
-        return if group is null
         groups.push group
+        return if group is null
         received.push "< #{group}"
       out.on 'data', (data) ->
         values = []
@@ -95,6 +95,7 @@ describe 'Collate component', ->
           values.push val
         received.push values.join ','
       out.on 'endgroup', (group) ->
+        groups.pop()
         return if group is null
         received.push "> #{group}"
       out.on 'disconnect', ->
@@ -114,6 +115,7 @@ describe 'Collate component', ->
       c.inPorts.in.attach inSock for inSock in ins
       inport.beginGroup null for inport in ins
 
+      hasNotSent = ins.slice 0
       for entry,index in original
         # Parse comma-separated
         entryData = entry.split ','
@@ -124,13 +126,19 @@ describe 'Collate component', ->
 
         # Send to a random input port
         randomConnection = Math.floor Math.random() * ins.length
+
+        # Ensure each connection sends something
+        if original.length - index is hasNotSent.length
+          randomConnection = ins.indexOf hasNotSent[0]
+        if hasNotSent.indexOf(ins[randomConnection]) isnt -1
+          hasNotSent.splice(hasNotSent.indexOf(ins[randomConnection]), 1)
+
         ins[randomConnection].send entryObj
 
         # Once we're close to the end we end stream on one of the inputs
         if index is original.length - 3
-          disconnecting = ins.pop()
+          [disconnecting] = ins.splice(randomConnection, 1)
           disconnecting.endGroup()
-
       # Finally disconnect all
       inport.endGroup() for inport in ins
 
