@@ -66,7 +66,5 @@ exports.getComponent = ->
     c.pending[input.scope].resolved = true
     # Send data
     data = results.map (ip) -> ip.data
-    if data.length is 1
-      data = data[0]
     output.sendDone
       out: data

@@ -82,10 +82,7 @@ exports.getComponent = ->
     c.pending[input.scope].resolved = true
     # Send data
     resultData = input.attached('in').map (idx) ->
-      data = results[idx].map (ip) -> ip.data
-      if data.length is 1
-        return data[0]
-      return data
+      results[idx].map (ip) -> ip.data
     output.sendDone
       out: resultData
     # Clean packets

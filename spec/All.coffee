@@ -50,8 +50,8 @@ describe 'All component', ->
       errOut.on 'data', done
       out.on 'data', (data) ->
         chai.expect(data).to.eql [
-          'hello world'
-          123
+          ['hello world']
+          [123]
         ]
         done()
       ins[1].send 123
@@ -60,7 +60,7 @@ describe 'All component', ->
       errOut.on 'data', done
       out.on 'data', (data) ->
         chai.expect(data).to.eql [
-          'hello world'
+          ['hello world']
           [123, 456]
         ]
         done()
@@ -78,8 +78,8 @@ describe 'All component', ->
       errOut.on 'data', done
       out.on 'data', (data) ->
         chai.expect(data).to.eql [
-          'hello world'
-          123
+          ['hello world']
+          [123]
         ]
         done()
       ins[1].send new noflo.IP 'data', 123,
@@ -91,10 +91,10 @@ describe 'All component', ->
     it 'should send results by scope', (done) ->
       expected = [
         scope: 2
-        data: ['hello world', 123]
+        data: [['hello world'], [123]]
       ,
         scope: 1
-        data: [5542, 'foo bar']
+        data: [[5542], ['foo bar']]
       ]
       errOut.on 'data', done
       out.on 'ip', (ip) ->
@@ -150,7 +150,7 @@ describe 'All component', ->
         error: 'Second scope failed'
       ,
         scope: 1
-        data: [65432, 'foo bar baz']
+        data: [[65432], ['foo bar baz']]
       ]
       errOut.on 'ip', (ip) ->
         return unless ip.type is 'data'

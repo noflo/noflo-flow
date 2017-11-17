@@ -49,7 +49,7 @@ describe 'Race component', ->
     it 'should send the first result out', (done) ->
       errOut.on 'data', done
       out.on 'data', (data) ->
-        chai.expect(data).to.eql 123
+        chai.expect(data).to.eql [123]
         done()
       ins[1].send 123
       ins[0].send 'hello world'
@@ -66,7 +66,7 @@ describe 'Race component', ->
         return unless ip.type is 'data'
         expect = expected.shift()
         chai.expect(ip.scope).to.equal expect.scope
-        chai.expect(ip.data).to.eql expect.data
+        chai.expect(ip.data).to.eql [expect.data]
         return if expected.length
         done()
       ins[0].send new noflo.IP 'data', 5542,
@@ -129,7 +129,7 @@ describe 'Race component', ->
         return unless ip.type is 'data'
         expect = expected.shift()
         chai.expect(ip.scope).to.equal expect.scope
-        chai.expect(ip.data).to.eql expect.data
+        chai.expect(ip.data).to.eql [expect.data]
         return if expected.length
         done()
       errIn.send new noflo.IP 'data', new Error('Second scope failed'),
