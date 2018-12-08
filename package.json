@@ -28,20 +28,32 @@
     "noflo": "^1.0.0"
   },
   "devDependencies": {
-    "chai": "^4.0.0",
-    "grunt": "^1.0.1",
-    "grunt-coffeelint": "^0.0.16",
-    "grunt-contrib-coffee": "^2.0.0",
-    "grunt-contrib-watch": "^1.0.0",
-    "grunt-mocha-phantomjs": "^4.0.0",
-    "grunt-mocha-test": "^0.13.2",
-    "grunt-noflo-browser": "^1.5.0",
-    "mocha": "^5.0.0"
+    "chai": "^4.2.0",
+    "coffee-loader": "^0.9.0",
+    "coffeelint": "^2.1.0",
+    "coffeescript": "^2.3.2",
+    "karma": "^3.1.3",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "mocha": "^5.0.0",
+    "noflo-component-loader": "^0.3.2",
+    "noflo-runtime-headless": "^0.1.0",
+    "noflo-runtime-postmessage": "^0.10.1",
+    "noflo-webpack-config": "^1.1.0",
+    "webpack": "^4.27.1",
+    "webpack-cli": "^3.1.2"
   },
   "noflo": {
     "icon": "random"
   },
   "scripts": {
-    "test": "grunt test"
+    "prebuild": "noflo-cache-preheat",
+    "build": "webpack --config node_modules/noflo-webpack-config/webpack.config.js",
+    "pretest": "coffeelint components/*.coffee && coffee -b -c spec/*.coffee",
+    "test:node": "mocha --exit --require node_modules/noflo-webpack-config/inject.js spec/*.js",
+    "test:browser": "karma start node_modules/noflo-webpack-config/karma.config.js",
+    "test": "npm run test:node && npm run test:browser"
   }
 }

@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - 'lts/*'
 before_script:
-- npm install -g grunt-cli
+- npm run build
 deploy:
   provider: npm
   email: henri.bergius@iki.fi
