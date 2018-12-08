@@ -6,3 +6,7 @@ node_modules/
 npm-debug.log
 components/*/
 spec/*.xml
+spec/*.js
+dist/
+package-lock.json
+fbp.json
