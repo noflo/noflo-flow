@@ -1,5 +1,5 @@
 # Flow Control for NoFlo
-[![Build Status](https://secure.travis-ci.org/noflo/noflo-flow.png?branch=master)](https://travis-ci.org/noflo/noflo-flow) [![Dependency Status](https://gemnasium.com/noflo/noflo-flow.png)](https://gemnasium.com/noflo/noflo-flow) [![NPM version](https://badge.fury.io/js/noflo-flow.png)](http://badge.fury.io/js/noflo-flow)
+[![Build Status](https://secure.travis-ci.org/noflo/noflo-flow.png?branch=master)](https://travis-ci.org/noflo/noflo-flow)
 
 This package provides utility components to control the flow within a
 [NoFlo](http://noflojs.org/) program.
