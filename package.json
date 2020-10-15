@@ -29,9 +29,11 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "coffee-loader": "^1.0.1",
-    "coffeelint": "^2.1.0",
-    "coffeescript": "^2.3.2",
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-chai": "0.0.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-mocha": "^8.0.0",
     "karma": "^5.2.3",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
@@ -51,7 +53,7 @@
   "scripts": {
     "prebuild": "noflo-cache-preheat",
     "build": "webpack --config node_modules/noflo-webpack-config/webpack.config.js",
-    "pretest": "coffeelint components/*.coffee && coffee -b -c spec/*.coffee",
+    "pretest": "eslint *.js components/*.js spec/*.js",
     "test:node": "mocha --exit --require node_modules/noflo-webpack-config/inject.js spec/*.js",
     "test:browser": "karma start node_modules/noflo-webpack-config/karma.config.js",
     "test": "npm run test:node && npm run test:browser"

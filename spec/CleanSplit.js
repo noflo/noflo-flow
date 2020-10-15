@@ -3,16 +3,16 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('CleanSplit component', function() {
+describe('CleanSplit component', () => {
   let loader = null;
   const accept = null;
   let ins = null;
   let out = null;
 
   before(() => loader = new noflo.ComponentLoader(baseDir));
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/CleanSplit', function(err, instance) {
+    return loader.load('flow/CleanSplit', (err, instance) => {
       if (err) { return done(err); }
       ins = noflo.internalSocket.createSocket();
       instance.inPorts.in.attach(ins);
@@ -21,18 +21,18 @@ describe('CleanSplit component', function() {
       return done();
     });
   });
-  return describe('accepting only certain numbers', () => it('should send the expected numbers out', function(done) {
+  return describe('accepting only certain numbers', () => it('should send the expected numbers out', (done) => {
     const expected = [
       '< foo',
       '1',
       '2',
       '3',
-      '>'
+      '>',
     ];
     const received = [];
-    out.on('begingroup', group => received.push(`< ${group}`));
-    out.on('data', data => received.push(`${data}`));
-    out.on('endgroup', function(group) {
+    out.on('begingroup', (group) => received.push(`< ${group}`));
+    out.on('data', (data) => received.push(`${data}`));
+    out.on('endgroup', (group) => {
       received.push('>');
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
@@ -46,5 +46,3 @@ describe('CleanSplit component', function() {
     return ins.endGroup('foo');
   }));
 });
-
-

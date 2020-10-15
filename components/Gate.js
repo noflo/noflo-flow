@@ -5,32 +5,30 @@
  */
 const noflo = require('noflo');
 
-exports.getComponent = function() {
-  const c = new noflo.Component;
+exports.getComponent = function () {
+  const c = new noflo.Component();
   c.description = 'Forward packets only when the gate is open';
   c.icon = 'pause';
   c.inPorts.add('in',
-    {datatype: 'all'});
+    { datatype: 'all' });
   c.inPorts.add('open', {
     datatype: 'bang',
-    description: 'Send one IP to open the gate'
-  }
-  );
+    description: 'Send one IP to open the gate',
+  });
   c.inPorts.add('close', {
     datatype: 'bang',
-    description: 'Send one IP to close the gate'
-  }
-  );
+    description: 'Send one IP to close the gate',
+  });
   c.outPorts.add('out',
-    {datatype: 'all'});
+    { datatype: 'all' });
   c.isOpen = false;
-  c.tearDown = function(callback) {
+  c.tearDown = function (callback) {
     c.isOpen = false;
     c.icon = 'pause';
     return callback();
   };
   c.forwardBrackets = {};
-  return c.process(function(input, output) {
+  return c.process((input, output) => {
     if (input.hasData('open')) {
       input.getData('open');
       c.isOpen = true;
@@ -52,7 +50,6 @@ exports.getComponent = function() {
       output.done();
       return;
     }
-    return output.sendDone({
-      out: packet});
+    return output.sendDone({ out: packet });
   });
 };

@@ -4,36 +4,35 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const noflo = require("noflo");
+const noflo = require('noflo');
 
-exports.getComponent = function() {
-  const c = new noflo.Component;
-  c.description = `Like 'core/Merge', but merge up to a specified \
-number of streams.`;
+exports.getComponent = function () {
+  const c = new noflo.Component();
+  c.description = 'Like \'core/Merge\', but merge up to a specified \
+number of streams.';
   c.inPorts.add('in', {
     datatype: 'all',
-    description: 'IP to merge'
-  }
-  );
+    description: 'IP to merge',
+  });
   c.inPorts.add('threshold', {
     datatype: 'int',
     control: true,
-    default: 1
-  }
-  );
+    default: 1,
+  });
   c.outPorts.add('out',
-    {datatype: 'all'});
+    { datatype: 'all' });
 
   c.received = 0;
-  c.tearDown = function(callback) {
+  c.tearDown = function (callback) {
     c.received = 0;
     return callback();
   };
 
   c.forwardBrackets = {};
 
-  return c.process(function(input, output) {
-    let packet, threshold;
+  return c.process((input, output) => {
+    let packet; let
+      threshold;
     if (!input.hasStream('in')) { return; }
     if (input.attached('threshold') && !input.hasData('threshold')) { return; }
     if (input.hasData('threshold')) {
@@ -45,8 +44,7 @@ number of streams.`;
     if (c.received < threshold) {
       // We can still send
       for (packet of Array.from(packets)) {
-        output.send({
-          out: packet});
+        output.send({ out: packet });
       }
     } else {
       // Over threshold, drop packets

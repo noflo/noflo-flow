@@ -3,14 +3,14 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('CleanDisconnect component', function() {
+describe('CleanDisconnect component', () => {
   const g = {};
   let loader = null;
 
   before(() => loader = new noflo.ComponentLoader(baseDir));
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/CleanDisconnect', function(err, instance) {
+    return loader.load('flow/CleanDisconnect', (err, instance) => {
       if (err) { return done(err); }
       g.c = instance;
       g.insA = noflo.internalSocket.createSocket();
@@ -29,50 +29,50 @@ describe('CleanDisconnect component', function() {
     });
   });
 
-  describe('when g.instantiated', function() {
+  describe('when g.instantiated', () => {
     it('should have input ports', () => chai.expect(g.c.inPorts.in).to.be.an('object'));
 
     return it('should have an g.output port', () => chai.expect(g.c.outPorts.out).to.be.an('object'));
   });
 
-  return it("ensure nesting streams get separated by disconnection", function(done) {
+  return it('ensure nesting streams get separated by disconnection', (done) => {
     let count = 0;
 
-    g.outA.on("data", function(data) {
-      chai.expect(data).to.equal("a");
+    g.outA.on('data', (data) => {
+      chai.expect(data).to.equal('a');
       chai.expect(count).to.equal(0);
       return count++;
     });
-    g.outB.on("data", function(data) {
-      chai.expect(data).to.equal("b");
+    g.outB.on('data', (data) => {
+      chai.expect(data).to.equal('b');
       chai.expect(count).to.equal(2);
       return count++;
     });
-    g.outC.on("data", function(data) {
-      chai.expect(data).to.equal("c");
+    g.outC.on('data', (data) => {
+      chai.expect(data).to.equal('c');
       chai.expect(count).to.equal(4);
       return count++;
     });
 
-    g.outA.on("disconnect", function() {
+    g.outA.on('disconnect', () => {
       chai.expect(count).to.equal(1);
       return count++;
     });
-    g.outB.on("disconnect", function() {
+    g.outB.on('disconnect', () => {
       chai.expect(count).to.equal(3);
       return count++;
     });
-    g.outC.on("disconnect", function() {
+    g.outC.on('disconnect', () => {
       chai.expect(count).to.equal(5);
       return done();
     });
 
     g.insA.connect();
-    g.insA.send("a");
+    g.insA.send('a');
     g.insB.connect();
-    g.insB.send("b");
+    g.insB.send('b');
     g.insC.connect();
-    g.insC.send("c");
+    g.insC.send('c');
     g.insC.disconnect();
     g.insB.disconnect();
     return g.insA.disconnect();

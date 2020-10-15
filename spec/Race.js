@@ -3,17 +3,17 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('Race component', function() {
+describe('Race component', () => {
   let c = null;
   const ins = [];
   let errIn = null;
   let out = null;
   let errOut = null;
 
-  before(function(done) {
+  before(function (done) {
     this.timeout(4000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/Race', function(err, instance) {
+    return loader.load('flow/Race', (err, instance) => {
       if (err) { return done(err); }
       c = instance;
       ins.push(noflo.internalSocket.createSocket());
@@ -26,48 +26,49 @@ describe('Race component', function() {
       return done();
     });
   });
-  beforeEach(function() {
+  beforeEach(() => {
     out = noflo.internalSocket.createSocket();
     c.outPorts.out.attach(out);
     errOut = noflo.internalSocket.createSocket();
     return c.outPorts.error.attach(errOut);
   });
-  afterEach(function() {
+  afterEach(() => {
     c.outPorts.out.detach(out);
     out = null;
     c.outPorts.error.detach(errOut);
     return errOut = null;
   });
-  describe('receiving results for two inbound connections', function() {
-    before(function() {
+  describe('receiving results for two inbound connections', () => {
+    before(() => {
       c.inPorts.in.attach(ins[0]);
-      return c.inPorts.in.attach(ins[1]);});
-    after(function(done) {
+      return c.inPorts.in.attach(ins[1]);
+    });
+    after((done) => {
       c.inPorts.in.detach(ins[1]);
       c.inPorts.in.detach(ins[0]);
       return c.shutdown(done);
     });
-    it('should send the first result out', function(done) {
+    it('should send the first result out', (done) => {
       errOut.on('data', done);
-      out.on('data', function(data) {
+      out.on('data', (data) => {
         chai.expect(data).to.eql([123]);
         return done();
       });
       ins[1].send(123);
       return ins[0].send('hello world');
     });
-    return it('should send results by scope', function(done) {
+    return it('should send results by scope', (done) => {
       const expected = [{
         scope: 1,
-        data: 5542
-      }
-      , {
+        data: 5542,
+      },
+      {
         scope: 2,
-        data: 123
-      }
+        data: 123,
+      },
       ];
       errOut.on('data', done);
-      out.on('ip', function(ip) {
+      out.on('ip', (ip) => {
         if (ip.type !== 'data') { return; }
         const expect = expected.shift();
         chai.expect(ip.scope).to.equal(expect.scope);
@@ -76,68 +77,62 @@ describe('Race component', function() {
         return done();
       });
       ins[0].send(new noflo.IP('data', 5542,
-        {scope: 1})
-      );
+        { scope: 1 }));
       ins[1].send(new noflo.IP('data', 123,
-        {scope: 2})
-      );
+        { scope: 2 }));
       ins[0].send(new noflo.IP('data', 'hello world',
-        {scope: 2})
-      );
+        { scope: 2 }));
       return ins[1].send(new noflo.IP('data', 'foo bar',
-        {scope: 1})
-      );
+        { scope: 1 }));
     });
   });
-  return describe('receiving result and error for two inbound connections', function() {
-    before(function() {
+  return describe('receiving result and error for two inbound connections', () => {
+    before(() => {
       c.inPorts.in.attach(ins[0]);
-      return c.inPorts.in.attach(ins[1]);});
-    after(function(done) {
+      return c.inPorts.in.attach(ins[1]);
+    });
+    after((done) => {
       c.inPorts.in.detach(ins[1]);
       c.inPorts.in.detach(ins[0]);
       return c.shutdown(done);
     });
-    it('should send the error out and no results', function(done) {
-      errOut.on('data', function(err) {
+    it('should send the error out and no results', (done) => {
+      errOut.on('data', (err) => {
         chai.expect(err).to.be.an('error');
         chai.expect(err.message).to.equal('Error on first');
         return done();
       });
-      out.on('data', data => done(new Error('Unexpected data received')));
-      errIn.send(new Error("Error on first"));
+      out.on('data', (data) => done(new Error('Unexpected data received')));
+      errIn.send(new Error('Error on first'));
       return ins[1].send(123);
     });
-    it('should send the error out and no results', function(done) {
-      errOut.on('ip', function(ip) {
+    it('should send the error out and no results', (done) => {
+      errOut.on('ip', (ip) => {
         if (ip.type !== 'data') { return; }
         chai.expect(ip.data).to.be.an('error');
         chai.expect(ip.data.message).to.equal('Error on scope');
         chai.expect(ip.scope).to.equal(0);
         return done();
       });
-      out.on('data', data => done(new Error('Unexpected data received')));
+      out.on('data', (data) => done(new Error('Unexpected data received')));
       errIn.send(new noflo.IP('data', new Error('Error on scope'),
-        {scope: 0})
-      );
+        { scope: 0 }));
       ins[1].send(new noflo.IP('data', 123,
-        {scope: 0})
-      );
+        { scope: 0 }));
       return ins[1].send(new noflo.IP('data', 456,
-        {scope: 0})
-      );
+        { scope: 0 }));
     });
-    return it('should send results by scope', function(done) {
+    return it('should send results by scope', (done) => {
       const expected = [{
         scope: 2,
-        error: 'Second scope failed'
-      }
-      , {
+        error: 'Second scope failed',
+      },
+      {
         scope: 1,
-        data: 65432
-      }
+        data: 65432,
+      },
       ];
-      errOut.on('ip', function(ip) {
+      errOut.on('ip', (ip) => {
         if (ip.type !== 'data') { return; }
         const expect = expected.shift();
         chai.expect(ip.scope).to.equal(expect.scope);
@@ -146,7 +141,7 @@ describe('Race component', function() {
         if (expected.length) { return; }
         return done();
       });
-      out.on('ip', function(ip) {
+      out.on('ip', (ip) => {
         if (ip.type !== 'data') { return; }
         const expect = expected.shift();
         chai.expect(ip.scope).to.equal(expect.scope);
@@ -155,17 +150,13 @@ describe('Race component', function() {
         return done();
       });
       errIn.send(new noflo.IP('data', new Error('Second scope failed'),
-        {scope: 2})
-      );
+        { scope: 2 }));
       ins[0].send(new noflo.IP('data', 65432,
-        {scope: 1})
-      );
+        { scope: 1 }));
       ins[1].send(new noflo.IP('data', 123,
-        {scope: 2})
-      );
+        { scope: 2 }));
       return ins[1].send(new noflo.IP('data', 'foo bar baz',
-        {scope: 1})
-      );
+        { scope: 1 }));
     });
   });
 });

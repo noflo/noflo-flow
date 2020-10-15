@@ -3,13 +3,13 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('ReverseSplit component', function() {
+describe('ReverseSplit component', () => {
   const g = {};
   let loader = null;
   before(() => loader = new noflo.ComponentLoader(baseDir));
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/ReverseSplit', function(err, instance) {
+    return loader.load('flow/ReverseSplit', (err, instance) => {
       if (err) { return done(err); }
       g.c = instance;
       g.ins = noflo.internalSocket.createSocket();
@@ -24,22 +24,22 @@ describe('ReverseSplit component', function() {
     });
   });
 
-  describe('when instantiated', function() {
+  describe('when instantiated', () => {
     it('should have input ports', () => chai.expect(g.c.inPorts.in).to.be.an('object'));
 
     return it('should have an g.output port', () => chai.expect(g.c.outPorts.out).to.be.an('object'));
   });
 
-  return it("send some IPs and they are forwarded in reverse order of port attachments", function(done) {
+  return it('send some IPs and they are forwarded in reverse order of port attachments', (done) => {
     let count = 0;
 
-    g.outA.on("data", data => chai.expect(++count).to.equal(3));
-    g.outB.on("data", data => chai.expect(++count).to.equal(2));
-    g.outC.on("data", data => chai.expect(++count).to.equal(1));
-    g.outA.on("disconnect", () => done());
+    g.outA.on('data', (data) => chai.expect(++count).to.equal(3));
+    g.outB.on('data', (data) => chai.expect(++count).to.equal(2));
+    g.outC.on('data', (data) => chai.expect(++count).to.equal(1));
+    g.outA.on('disconnect', () => done());
 
     g.ins.connect();
-    g.ins.send("a");
+    g.ins.send('a');
     return g.ins.disconnect();
   });
 });

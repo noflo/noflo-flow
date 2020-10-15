@@ -5,55 +5,49 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const noflo = require("noflo");
+const noflo = require('noflo');
 
-exports.getComponent = function() {
-  const c = new noflo.Component;
-  c.description = `send connection to 'yes' if its top-level group is one \
-of the provided groups, otherwise 'no'`;
+exports.getComponent = function () {
+  const c = new noflo.Component();
+  c.description = 'send connection to \'yes\' if its top-level group is one \
+of the provided groups, otherwise \'no\'';
   c.inPorts.add('in', {
     datatype: 'all',
-    description: 'IPs to route use their groups'
-  }
-  );
+    description: 'IPs to route use their groups',
+  });
   c.inPorts.add('regexp', {
     datatype: 'string',
-    description: 'Regexps to match groups'
-  }
-  );
+    description: 'Regexps to match groups',
+  });
   c.inPorts.add('group', {
     datatype: 'string',
-    description: 'List of groups (one group per IP)'
-  }
-  );
+    description: 'List of groups (one group per IP)',
+  });
   c.inPorts.add('reset', {
     datatype: 'bang',
-    description: 'Reset the list of groups and regexps'
-  }
-  );
+    description: 'Reset the list of groups and regexps',
+  });
   c.outPorts.add('yes', {
     datatype: 'all',
-    description: 'IPs with group that match the groups or regexps provided'
-  }
-  );
+    description: 'IPs with group that match the groups or regexps provided',
+  });
   c.outPorts.add('no', {
     datatype: 'all',
-    description: `IPs with group that don\'t match the groups or regexps \
-provided`
-  }
-  );
+    description: 'IPs with group that don\'t match the groups or regexps \
+provided',
+  });
   c.forwardBrackets = {};
   c.matchGroups = [];
   c.regexps = [];
-  const reset = function() {
+  const reset = function () {
     c.matchGroups = [];
     return c.regexps = [];
   };
-  c.tearDown = function(callback) {
+  c.tearDown = function (callback) {
     reset();
     return callback();
   };
-  return c.process(function(input, output) {
+  return c.process((input, output) => {
     let packet;
     if (input.hasData('group')) {
       c.matchGroups.push(input.getData('group'));
@@ -76,33 +70,30 @@ provided`
     if (packets[0].type !== 'openBracket') {
       // Stream doesn't start with a group, send to NO
       for (packet of Array.from(packets)) {
-        output.send({
-          no: packet});
+        output.send({ no: packet });
       }
       output.done();
       return;
     }
     let matched = false;
     const group = packets[0].data;
-    for (let matchGroup of Array.from(c.matchGroups)) {
+    for (const matchGroup of Array.from(c.matchGroups)) {
       if (group !== matchGroup) { continue; }
       matched = true;
     }
-    for (let regexp of Array.from(c.regexps)) {
+    for (const regexp of Array.from(c.regexps)) {
       if (group.match(regexp) == null) { continue; }
       matched = true;
     }
     if (!matched) {
       for (packet of Array.from(packets)) {
-        output.send({
-          no: packet});
+        output.send({ no: packet });
       }
       output.done();
       return;
     }
     for (packet of Array.from(packets)) {
-      output.send({
-        yes: packet});
+      output.send({ yes: packet });
     }
     output.done();
   });

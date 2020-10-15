@@ -3,15 +3,15 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('CountedMerge component', function() {
+describe('CountedMerge component', () => {
   let c = null;
   let threshold = null;
   let ins = null;
   let out = null;
-  before(function(done) {
+  before(function (done) {
     this.timeout(6000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/CountedMerge', function(err, instance) {
+    return loader.load('flow/CountedMerge', (err, instance) => {
       if (err) { return done(err); }
       c = instance;
       threshold = noflo.internalSocket.createSocket();
@@ -21,16 +21,16 @@ describe('CountedMerge component', function() {
       return done();
     });
   });
-  beforeEach(function() {
+  beforeEach(() => {
     out = noflo.internalSocket.createSocket();
     return c.outPorts.out.attach(out);
   });
-  afterEach(function() {
+  afterEach(() => {
     c.outPorts.out.detach(out);
     return out = null;
   });
 
-  return describe('with a count or 3 and some streams', () => it('should merge packets from first three streams', function(done) {
+  return describe('with a count or 3 and some streams', () => it('should merge packets from first three streams', (done) => {
     const expected = [
       '< a',
       'DATA a',
@@ -40,20 +40,20 @@ describe('CountedMerge component', function() {
       '>',
       '< c',
       'DATA c',
-      '>'
+      '>',
     ];
     const received = [];
 
-    out.on('begingroup', grp => received.push(`< ${grp}`));
-    out.on('data', data => received.push(`DATA ${data}`));
-    out.on('endgroup', function() {
+    out.on('begingroup', (grp) => received.push(`< ${grp}`));
+    out.on('data', (data) => received.push(`DATA ${data}`));
+    out.on('endgroup', () => {
       received.push('>');
       if (received.length !== expected.length) { return; }
-      return setTimeout(function() {
+      return setTimeout(() => {
         chai.expect(received).to.eql(expected);
         return done();
-      }
-      , 100);
+      },
+      100);
     });
 
     threshold.send(3);

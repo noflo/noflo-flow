@@ -3,16 +3,16 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('Deny component', function() {
+describe('Deny component', () => {
   let loader = null;
   let deny = null;
   let ins = null;
   let out = null;
 
   before(() => loader = new noflo.ComponentLoader(baseDir));
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/Deny', function(err, instance) {
+    return loader.load('flow/Deny', (err, instance) => {
       if (err) { return done(err); }
       ins = noflo.internalSocket.createSocket();
       instance.inPorts.in.attach(ins);
@@ -23,17 +23,17 @@ describe('Deny component', function() {
       return done();
     });
   });
-  return describe('denying only certain numbers', () => it('should send the expected numbers out', function(done) {
+  return describe('denying only certain numbers', () => it('should send the expected numbers out', (done) => {
     const expected = [
       '< foo',
       '2',
       '4',
-      '>'
+      '>',
     ];
     const received = [];
-    out.on('begingroup', group => received.push(`< ${group}`));
-    out.on('data', data => received.push(`${data}`));
-    out.on('endgroup', function(group) {
+    out.on('begingroup', (group) => received.push(`< ${group}`));
+    out.on('data', (data) => received.push(`${data}`));
+    out.on('endgroup', (group) => {
       received.push('>');
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);

@@ -9,12 +9,12 @@ const noflo = require('noflo');
 
 // The actual collation algorithm, returns a closure with the control fields
 // that can be used with Array.prototype.sort()
-const sortByControlFields = function(fields, a, b) {
+const sortByControlFields = function (fields, a, b) {
   // If there are no control fields specified we can't sort
   if (!fields.length) { return 0; }
 
   // Comparison of a single control field
-  const sort = function(left, right) {
+  const sort = function (left, right) {
     // Lowercase strings to they always sort correctly
     if (typeof left === 'string') { left = left.toLowerCase(); }
     if (typeof right === 'string') { right = right.toLowerCase(); }
@@ -25,7 +25,7 @@ const sortByControlFields = function(fields, a, b) {
   };
 
   // Traverse the fields until you find one to sort by
-  for (let field of Array.from(fields)) {
+  for (const field of Array.from(fields)) {
     const order = sort(a.data[field], b.data[field]);
     if (order !== 0) { return order; }
   }
@@ -38,15 +38,15 @@ const sortByControlFields = function(fields, a, b) {
 };
 
 // Sending the collated objects to the output port together with bracket IPs
-const sendWithGroups = function(packets, fields, output) {
-  let closes, field;
+const sendWithGroups = function (packets, fields, output) {
+  let closes; let
+    field;
   let previous = null;
-  for (let packet of Array.from(packets)) {
+  for (const packet of Array.from(packets)) {
     // For the first packet send a bracket IP for each control field
     for (field of Array.from(fields)) {
       if (previous) { break; }
-      output.send({
-        out: new noflo.IP('openBracket', field)});
+      output.send({ out: new noflo.IP('openBracket', field) });
     }
 
     // For subsequent packets send ending and opening brackets for fields that
@@ -61,20 +61,17 @@ const sendWithGroups = function(packets, fields, output) {
         closes = differing.slice(0);
         closes.reverse();
         for (f of Array.from(closes)) {
-          output.send({
-            out: new noflo.IP('closeBracket', f)});
+          output.send({ out: new noflo.IP('closeBracket', f) });
         }
         for (f of Array.from(differing)) {
-          output.send({
-            out: new noflo.IP('openBracket', f)});
+          output.send({ out: new noflo.IP('openBracket', f) });
         }
         break;
       }
     }
 
     // Send it out
-    output.send({
-      out: packet});
+    output.send({ out: packet });
 
     // Provide for comparison to the next one
     previous = packet;
@@ -86,47 +83,43 @@ const sendWithGroups = function(packets, fields, output) {
   return (() => {
     const result = [];
     for (field of Array.from(closes)) {
-      result.push(output.send({
-        out: new noflo.IP('closeBracket', field)}));
+      result.push(output.send({ out: new noflo.IP('closeBracket', field) }));
     }
     return result;
   })();
 };
 
-exports.getComponent = function() {
-  const c = new noflo.Component;
-  c.description = `Collate two or more streams, based on \
-a list of control field lengths`;
+exports.getComponent = function () {
+  const c = new noflo.Component();
+  c.description = 'Collate two or more streams, based on \
+a list of control field lengths';
   c.icon = 'sort-amount-asc';
   // Inport for accepting a comma-separated list of control fields
   c.inPorts.add('ctlfields', {
     datatype: 'string',
     description: 'Comma-separated list of object keys to collate by',
-    control: true
-  }
-  );
+    control: true,
+  });
   // Here we accept packets from 0-n connections that will eventually be collated
   c.inPorts.add('in', {
     description: 'Objects to collate',
     datatype: 'object',
-    addressable: true
-  }
-  );
+    addressable: true,
+  });
   // We send the packets in collated order with groups to the output port
   c.outPorts.add('out', {
     description: 'Objects in collated order',
-    datatype: 'object'
-  }
-  );
+    datatype: 'object',
+  });
 
   c.forwardBrackets = {};
 
-  return c.process(function(input, output) {
+  return c.process((input, output) => {
     // We want to have a list of fields to collate by
     if (!input.hasData('ctlfields')) { return; }
     // To be able to sort everything we must wait until we have all the data
     if (!input.attached('in').length) { return; }
-    const indexesWithStreams = input.attached('in').filter(idx => input.hasStream(['in', idx]));
+    const indexesWithStreams = input.attached('in').filter((idx) => input.hasStream(['in', idx]));
     if (indexesWithStreams.length !== input.attached('in').length) { return; }
 
     let fields = input.getData('ctlfields');
@@ -136,20 +129,18 @@ a list of control field lengths`;
 
     // Receive the packets
     let packets = [];
-    for (let idx of Array.from(indexesWithStreams)) {
-      const stream = input.getStream(['in', idx]).filter(ip => ip.type === 'data');
+    for (const idx of Array.from(indexesWithStreams)) {
+      const stream = input.getStream(['in', idx]).filter((ip) => ip.type === 'data');
       packets = packets.concat(stream);
     }
     // Sort them by control fields if there are any
     const original = packets.slice(0);
     packets.sort(sortByControlFields.bind(original, fields));
-    output.send({
-      out: new noflo.IP('openBracket', null)});
+    output.send({ out: new noflo.IP('openBracket', null) });
     // Send them out
     sendWithGroups(packets, fields, output);
     // Send end-of-transmission
-    output.send({
-      out: new noflo.IP('closeBracket', null)});
+    output.send({ out: new noflo.IP('closeBracket', null) });
     return output.done();
   });
 };

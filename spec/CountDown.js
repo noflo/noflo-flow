@@ -3,16 +3,16 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('CountDown component', function() {
+describe('CountDown component', () => {
   let c = null;
   let count = null;
   let repeat = null;
   let ins = null;
   let out = null;
-  before(function(done) {
+  before(function (done) {
     this.timeout(6000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/CountDown', function(err, instance) {
+    return loader.load('flow/CountDown', (err, instance) => {
       if (err) { return done(err); }
       c = instance;
       count = noflo.internalSocket.createSocket();
@@ -24,23 +24,23 @@ describe('CountDown component', function() {
       return done();
     });
   });
-  beforeEach(function() {
+  beforeEach(() => {
     out = noflo.internalSocket.createSocket();
     return c.outPorts.out.attach(out);
   });
-  afterEach(function(done) {
+  afterEach((done) => {
     c.outPorts.out.detach(out);
     out = null;
     return c.shutdown(done);
   });
 
-  describe('with a number to count down from', () => it('should count each packet', function(done) {
+  describe('with a number to count down from', () => it('should count each packet', (done) => {
     let received = 0;
-    out.on('data', function(data) {
+    out.on('data', (data) => {
       chai.expect(data).to.be.a('null');
       return received++;
     });
-    out.on('disconnect', function() {
+    out.on('disconnect', () => {
       chai.expect(received).to.equal(1);
       return done();
     });
@@ -55,13 +55,13 @@ describe('CountDown component', function() {
     return ins.disconnect();
   }));
 
-  return describe('when set to "no repeat" mode', () => it('should only count down once', function(done) {
+  return describe('when set to "no repeat" mode', () => it('should only count down once', (done) => {
     let received = 0;
-    out.on('data', function(data) {
+    out.on('data', (data) => {
       chai.expect(data).to.be.a('null');
       return received++;
     });
-    out.on('disconnect', function() {
+    out.on('disconnect', () => {
       chai.expect(received).to.equal(1);
       return done();
     });

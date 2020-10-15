@@ -3,7 +3,7 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-describe('Gate component', function() {
+describe('Gate component', () => {
   let loader = null;
   let open = null;
   let close = null;
@@ -11,9 +11,9 @@ describe('Gate component', function() {
   let out = null;
 
   before(() => loader = new noflo.ComponentLoader(baseDir));
-  beforeEach(function(done) {
+  beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/Gate', function(err, instance) {
+    return loader.load('flow/Gate', (err, instance) => {
       if (err) { return done(err); }
       ins = noflo.internalSocket.createSocket();
       instance.inPorts.in.attach(ins);
@@ -26,17 +26,17 @@ describe('Gate component', function() {
       return done();
     });
   });
-  return describe('when gate is opened', () => it('should send only the packets while gate was open', function(done) {
+  return describe('when gate is opened', () => it('should send only the packets while gate was open', (done) => {
     const expected = [
       '2',
       '< bar',
       '3',
-      '>'
+      '>',
     ];
     const received = [];
-    out.on('begingroup', group => received.push(`< ${group}`));
-    out.on('data', data => received.push(`${data}`));
-    out.on('endgroup', function(group) {
+    out.on('begingroup', (group) => received.push(`< ${group}`));
+    out.on('data', (data) => received.push(`${data}`));
+    out.on('endgroup', (group) => {
       received.push('>');
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
@@ -54,4 +54,3 @@ describe('Gate component', function() {
     return ins.endGroup('foo');
   }));
 });
-
