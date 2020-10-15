@@ -1,17 +1,17 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('Reorder component', () => {
   let loader = null;
   const g = {};
 
-  before(() => loader = new noflo.ComponentLoader(baseDir));
+  before(() => {
+    loader = new noflo.ComponentLoader(baseDir);
+  });
   beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/Reorder', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/Reorder', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       g.c = instance;
       g.insA = noflo.internalSocket.createSocket();
       g.insB = noflo.internalSocket.createSocket();
@@ -21,14 +21,14 @@ describe('Reorder component', () => {
       g.outC = noflo.internalSocket.createSocket();
       g.c.inPorts.in.attach(g.insA);
       g.c.outPorts.out.attach(g.outA);
-      return done();
+      done();
     });
   });
 
   describe('when instantiated', () => {
     it('should have input ports', () => chai.expect(g.c.inPorts.in).to.be.an('object'));
 
-    return it('should have an g.output port', () => chai.expect(g.c.outPorts.out).to.be.an('object'));
+    it('should have an g.output port', () => chai.expect(g.c.outPorts.out).to.be.an('object'));
   });
 
   it('connect some number of ports and packets are sent in the reverse order of attachment', (done) => {
@@ -48,19 +48,19 @@ describe('Reorder component', () => {
       received.push(`1 ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
     g.outB.on('data', (data) => {
       received.push(`2 ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
     g.outC.on('data', (data) => {
       received.push(`3 ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
 
     g.insA.connect();
@@ -73,10 +73,10 @@ describe('Reorder component', () => {
 
     g.insC.connect();
     g.insC.send('c');
-    return g.insC.disconnect();
+    g.insC.disconnect();
   });
 
-  return it('the number of ports to wait for stream end until forwarding takes place is the lessor of the number of inports and the number of g.outports', (done) => {
+  it('the number of ports to wait for stream end until forwarding takes place is the lessor of the number of inports and the number of g.outports', (done) => {
     g.c.inPorts.in.attach(g.insB);
     g.c.outPorts.out.attach(g.outB);
     g.c.outPorts.out.attach(g.outC);
@@ -91,15 +91,15 @@ describe('Reorder component', () => {
       received.push(`1 ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
     g.outB.on('data', (data) => {
       received.push(`2 ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
-    g.outC.on('data', (data) => done(new Error('C received data unlike expected')));
+    g.outC.on('data', () => done(new Error('C received data unlike expected')));
 
     g.insA.connect();
     g.insA.send('a');
@@ -107,6 +107,6 @@ describe('Reorder component', () => {
 
     g.insB.connect();
     g.insB.send('b');
-    return g.insB.disconnect();
+    g.insB.disconnect();
   });
 });

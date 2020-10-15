@@ -1,15 +1,9 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Stop everything that\'s received and send out once we\'re \
-told that we\'re ready to send.';
+  c.description = 'Stop everything that\'s received and send out once we\'re told that we\'re ready to send.';
+  c.icon = 'stop-circle';
   c.inPorts.add('in', {
     datatype: 'all',
     description: 'IPs to buffer until an IP arrives on the ready port',
@@ -30,9 +24,9 @@ told that we\'re ready to send.';
     while (input.has('in')) {
       packets.push(input.get('in'));
     }
-    for (const packet of Array.from(packets)) {
+    packets.forEach((packet) => {
       output.send({ out: packet });
-    }
-    return output.done();
+    });
+    output.done();
   });
 };

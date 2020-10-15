@@ -1,44 +1,38 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('Concat component', () => {
   const g = {};
   let inCount = 2;
   let loader = null;
-  before(() => loader = new noflo.ComponentLoader(baseDir));
+  before(() => {
+    loader = new noflo.ComponentLoader(baseDir);
+  });
   beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/Concat', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/Concat', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       g.c = instance;
       g.ins = [];
       while (inCount) {
         const sock = noflo.internalSocket.createSocket();
         g.ins.push(sock);
         g.c.inPorts.in.attach(sock);
-        inCount--;
+        inCount -= 1;
       }
 
       g.out = noflo.internalSocket.createSocket();
       g.c.outPorts.out.attach(g.out);
-      return done();
+      done();
     });
-  });
-
-  describe('when instantiated', () => {
-    it('should have input ports', () => chai.expect(g.c.inPorts.in).to.be.an('object'));
-
-    return it('should have an g.output port', () => chai.expect(g.c.outPorts.out).to.be.an('object'));
   });
 
   it('packets sent to two ports should be ordered', (done) => {
     g.out.once('data', (data) => {
       chai.expect(data).to.deep.equal('hello');
-      return g.out.once('data', (data) => {
-        chai.expect(data).to.deep.equal('world');
-        return done();
+      g.out.once('data', (d) => {
+        chai.expect(d).to.deep.equal('world');
+        done();
       });
     });
 
@@ -47,17 +41,17 @@ describe('Concat component', () => {
     g.ins[0].send('hello');
 
     // For next test
-    return inCount = 3;
+    inCount = 3;
   });
 
   it('packets sent to three ports should be ordered', (done) => {
     g.out.once('data', (data) => {
       chai.expect(data).to.deep.equal('foo');
-      return g.out.once('data', (data) => {
-        chai.expect(data).to.deep.equal('bar');
-        return g.out.once('data', (data) => {
-          chai.expect(data).to.deep.equal('baz');
-          return done();
+      g.out.once('data', (d) => {
+        chai.expect(d).to.deep.equal('bar');
+        g.out.once('data', (d2) => {
+          chai.expect(d2).to.deep.equal('baz');
+          done();
         });
       });
     });
@@ -68,19 +62,19 @@ describe('Concat component', () => {
     g.ins[0].send('foo');
 
     // For next test
-    return inCount = 2;
+    inCount = 2;
   });
 
-  return it('buffers should be cleared by disconnect to avoid deadlock', (done) => {
+  it('buffers should be cleared by disconnect to avoid deadlock', (done) => {
     g.out.once('data', (data) => {
       chai.expect(data).to.deep.equal('hello');
-      return g.out.once('data', (data) => {
-        chai.expect(data).to.deep.equal('world');
-        return done();
+      g.out.once('data', (d) => {
+        chai.expect(d).to.deep.equal('world');
+        done();
       });
     });
 
     g.ins[1].send('world');
-    return g.ins[0].send('hello');
+    g.ins[0].send('hello');
   });
 });

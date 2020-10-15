@@ -1,16 +1,8 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'send connection to \'yes\' if its top-level group is one \
-of the provided groups, otherwise \'no\'';
+  c.description = 'send connection to \'yes\' if its top-level group is one of the provided groups, otherwise \'no\'';
   c.inPorts.add('in', {
     datatype: 'all',
     description: 'IPs to route use their groups',
@@ -33,22 +25,20 @@ of the provided groups, otherwise \'no\'';
   });
   c.outPorts.add('no', {
     datatype: 'all',
-    description: 'IPs with group that don\'t match the groups or regexps \
-provided',
+    description: 'IPs with group that don\'t match the groups or regexps provided',
   });
   c.forwardBrackets = {};
   c.matchGroups = [];
   c.regexps = [];
-  const reset = function () {
+  const reset = () => {
     c.matchGroups = [];
-    return c.regexps = [];
+    c.regexps = [];
   };
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     reset();
-    return callback();
+    callback();
   };
   return c.process((input, output) => {
-    let packet;
     if (input.hasData('group')) {
       c.matchGroups.push(input.getData('group'));
       output.done();
@@ -69,32 +59,32 @@ provided',
     const packets = input.getStream('in');
     if (packets[0].type !== 'openBracket') {
       // Stream doesn't start with a group, send to NO
-      for (packet of Array.from(packets)) {
+      packets.forEach((packet) => {
         output.send({ no: packet });
-      }
+      });
       output.done();
       return;
     }
     let matched = false;
     const group = packets[0].data;
-    for (const matchGroup of Array.from(c.matchGroups)) {
-      if (group !== matchGroup) { continue; }
+    c.matchGroups.forEach((matchGroup) => {
+      if (group !== matchGroup) { return; }
       matched = true;
-    }
-    for (const regexp of Array.from(c.regexps)) {
-      if (group.match(regexp) == null) { continue; }
+    });
+    c.regexps.forEach((regexp) => {
+      if (group.match(regexp) == null) { return; }
       matched = true;
-    }
+    });
     if (!matched) {
-      for (packet of Array.from(packets)) {
+      packets.forEach((packet) => {
         output.send({ no: packet });
-      }
+      });
       output.done();
       return;
     }
-    for (packet of Array.from(packets)) {
+    packets.forEach((packet) => {
       output.send({ yes: packet });
-    }
+    });
     output.done();
   });
 };

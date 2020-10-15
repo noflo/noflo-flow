@@ -1,23 +1,16 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-const prepareScope = function () {
+function prepareScope() {
   const data = {
     resolved: false,
     rejected: false,
   };
   return data;
-};
+}
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Like Promise.all, wait for result from all connected inputs \
-and send them or an error out';
+  c.description = 'Like Promise.race, wait for result from all connected inputs and send first result or an error out';
   c.icon = 'compress';
   c.inPorts.add('in', {
     datatype: 'all',
@@ -30,7 +23,7 @@ and send them or an error out';
   c.outPorts.add('error',
     { datatype: 'object' });
   c.pending = {};
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     c.pending = {};
     return callback();
   };
@@ -79,6 +72,6 @@ and send them or an error out';
     c.pending[input.scope].resolved = true;
     // Send data
     const data = results.map((ip) => ip.data);
-    return output.sendDone({ out: data });
+    output.sendDone({ out: data });
   });
 };

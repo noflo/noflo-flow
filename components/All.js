@@ -1,25 +1,17 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-const prepareScope = function () {
+function prepareScope() {
   const data = {
     results: {},
     resolved: false,
     rejected: false,
   };
   return data;
-};
+}
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Like Promise.all, wait for result from all connected inputs \
-and send them or an error out';
+  c.description = 'Like Promise.all, wait for result from all connected inputs and send them or an error out';
   c.icon = 'compress';
   c.inPorts.add('in', {
     datatype: 'all',
@@ -32,9 +24,9 @@ and send them or an error out';
   c.outPorts.add('error',
     { datatype: 'object' });
   c.pending = {};
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     c.pending = {};
-    return callback();
+    callback();
   };
   c.forwardBrackets = {};
   return c.process((input, output) => {
@@ -70,7 +62,7 @@ and send them or an error out';
       indexesWithStreams.forEach((idx) => {
         // Drop all packets that arrive after resolution
         const stream = input.getStream(['in', idx]);
-        return Array.from(stream).map((ip) => ip.drop());
+        return stream.map((ip) => ip.drop());
       });
       output.done();
       return;
@@ -86,15 +78,18 @@ and send them or an error out';
       if (results[idx]) { return; }
       // Add to results
       if (!results[idx]) { results[idx] = []; }
-      return results[idx] = results[idx].concat(stream);
+      results[idx] = results[idx].concat(stream);
     });
 
     // Check if we have all results
-    for (const idx of Array.from(input.attached('in'))) {
-      if (results[idx] != null ? results[idx].length : undefined) { continue; }
-      // Still waiting
-      output.done();
-      return;
+    const attached = input.attached('in');
+    for (let i = 0; i < attached.length; i += 1) {
+      const idx = attached[i];
+      if (!results[idx] || !results[idx].length) {
+        // Still waiting
+        output.done();
+        return;
+      }
     }
 
     // Mark as resolved
@@ -103,6 +98,6 @@ and send them or an error out';
     const resultData = input.attached('in').map((idx) => results[idx].map((ip) => ip.data));
     output.sendDone({ out: resultData });
     // Clean packets
-    return delete c.pending[input.scope].results;
+    delete c.pending[input.scope].results;
   });
 };

@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('CountDown component', () => {
   let c = null;
   let count = null;
@@ -12,8 +7,11 @@ describe('CountDown component', () => {
   before(function (done) {
     this.timeout(6000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/CountDown', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/CountDown', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       c = instance;
       count = noflo.internalSocket.createSocket();
       repeat = noflo.internalSocket.createSocket();
@@ -21,28 +19,28 @@ describe('CountDown component', () => {
       c.inPorts.count.attach(count);
       c.inPorts.repeat.attach(repeat);
       c.inPorts.in.attach(ins);
-      return done();
+      done();
     });
   });
   beforeEach(() => {
     out = noflo.internalSocket.createSocket();
-    return c.outPorts.out.attach(out);
+    c.outPorts.out.attach(out);
   });
   afterEach((done) => {
     c.outPorts.out.detach(out);
     out = null;
-    return c.shutdown(done);
+    c.shutdown(done);
   });
 
   describe('with a number to count down from', () => it('should count each packet', (done) => {
     let received = 0;
     out.on('data', (data) => {
       chai.expect(data).to.be.a('null');
-      return received++;
+      received += 1;
     });
     out.on('disconnect', () => {
       chai.expect(received).to.equal(1);
-      return done();
+      done();
     });
 
     count.send(2);
@@ -52,33 +50,35 @@ describe('CountDown component', () => {
     ins.disconnect();
     ins.connect();
     ins.send('packet');
-    return ins.disconnect();
+    ins.disconnect();
   }));
 
-  return describe('when set to "no repeat" mode', () => it('should only count down once', (done) => {
-    let received = 0;
-    out.on('data', (data) => {
-      chai.expect(data).to.be.a('null');
-      return received++;
-    });
-    out.on('disconnect', () => {
-      chai.expect(received).to.equal(1);
-      return done();
-    });
+  describe('when set to "no repeat" mode', () => {
+    it('should only count down once', (done) => {
+      let received = 0;
+      out.on('data', (data) => {
+        chai.expect(data).to.be.a('null');
+        received += 1;
+      });
+      out.on('disconnect', () => {
+        chai.expect(received).to.equal(1);
+        done();
+      });
 
-    repeat.send(false);
-    count.send(2);
-    ins.connect();
-    ins.send('packet');
-    ins.disconnect();
-    ins.connect();
-    ins.send('packet');
-    ins.disconnect();
-    ins.connect();
-    ins.send('packet');
-    ins.disconnect();
-    ins.connect();
-    ins.send('packet');
-    return ins.disconnect();
-  }));
+      repeat.send(false);
+      count.send(2);
+      ins.connect();
+      ins.send('packet');
+      ins.disconnect();
+      ins.connect();
+      ins.send('packet');
+      ins.disconnect();
+      ins.connect();
+      ins.send('packet');
+      ins.disconnect();
+      ins.connect();
+      ins.send('packet');
+      ins.disconnect();
+    });
+  });
 });

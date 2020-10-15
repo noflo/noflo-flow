@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('HasGroup component', () => {
   let c = null;
   let regexp = null;
@@ -14,8 +9,11 @@ describe('HasGroup component', () => {
   before(function (done) {
     this.timeout(6000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/HasGroup', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/HasGroup', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       c = instance;
       regexp = noflo.internalSocket.createSocket();
       group = noflo.internalSocket.createSocket();
@@ -25,31 +23,31 @@ describe('HasGroup component', () => {
       c.inPorts.group.attach(group);
       c.inPorts.reset.attach(reset);
       c.inPorts.in.attach(ins);
-      return done();
+      done();
     });
   });
   beforeEach(() => {
     yesOut = noflo.internalSocket.createSocket();
     c.outPorts.yes.attach(yesOut);
     noOut = noflo.internalSocket.createSocket();
-    return c.outPorts.no.attach(noOut);
+    c.outPorts.no.attach(noOut);
   });
   afterEach(() => {
     c.outPorts.yes.detach(yesOut);
     yesOut = null;
     c.outPorts.no.detach(noOut);
     noOut = null;
-    return reset.send(true);
+    reset.send(true);
   });
 
   describe('with an exact group match', () => it('it should get a match', (done) => {
-    noOut.on('data', (data) => {
+    noOut.on('data', () => {
       chai.expect(true, 'Received on wrong port').to.equal(false);
-      return done();
+      done();
     });
     yesOut.on('data', (data) => {
       chai.expect(data).to.equal('a');
-      return done();
+      done();
     });
 
     group.send('match');
@@ -57,17 +55,17 @@ describe('HasGroup component', () => {
     ins.beginGroup('match');
     ins.send('a');
     ins.endGroup();
-    return ins.disconnect();
+    ins.disconnect();
   }));
 
   describe('with an exact group mismatch', () => it('it should not get a match', (done) => {
-    yesOut.on('data', (data) => {
+    yesOut.on('data', () => {
       chai.expect(true, 'Received on wrong port').to.equal(false);
-      return done();
+      done();
     });
     noOut.on('data', (data) => {
       chai.expect(data).to.equal('b');
-      return done();
+      done();
     });
 
     group.send('match');
@@ -75,17 +73,17 @@ describe('HasGroup component', () => {
     ins.beginGroup('not a match');
     ins.send('b');
     ins.endGroup();
-    return ins.disconnect();
+    ins.disconnect();
   }));
 
-  return describe('with a regexp group match', () => it('it should get a match', (done) => {
-    noOut.on('data', (data) => {
+  describe('with a regexp group match', () => it('it should get a match', (done) => {
+    noOut.on('data', () => {
       chai.expect(true, 'Received on wrong port').to.equal(false);
-      return done();
+      done();
     });
     yesOut.on('data', (data) => {
       chai.expect(data).to.equal('c');
-      return done();
+      done();
     });
 
     regexp.send('reg.*');
@@ -93,6 +91,6 @@ describe('HasGroup component', () => {
     ins.beginGroup('a regexp match');
     ins.send('c');
     ins.endGroup();
-    return ins.disconnect();
+    ins.disconnect();
   }));
 });

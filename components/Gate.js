@@ -1,11 +1,6 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
   c.description = 'Forward packets only when the gate is open';
   c.icon = 'pause';
@@ -22,7 +17,7 @@ exports.getComponent = function () {
   c.outPorts.add('out',
     { datatype: 'all' });
   c.isOpen = false;
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     c.isOpen = false;
     c.icon = 'pause';
     return callback();
@@ -50,6 +45,6 @@ exports.getComponent = function () {
       output.done();
       return;
     }
-    return output.sendDone({ out: packet });
+    output.sendDone({ out: packet });
   });
 };

@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('Throttle component', () => {
   let loader = null;
   let load = null;
@@ -10,11 +5,16 @@ describe('Throttle component', () => {
   let ins = null;
   let out = null;
 
-  before(() => loader = new noflo.ComponentLoader(baseDir));
+  before(() => {
+    loader = new noflo.ComponentLoader(baseDir);
+  });
   beforeEach(function (done) {
     this.timeout(4000);
-    return loader.load('flow/Throttle', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/Throttle', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       ins = noflo.internalSocket.createSocket();
       instance.inPorts.in.attach(ins);
       load = noflo.internalSocket.createSocket();
@@ -23,10 +23,10 @@ describe('Throttle component', () => {
       instance.inPorts.max.attach(max);
       out = noflo.internalSocket.createSocket();
       instance.outPorts.out.attach(out);
-      return done();
+      done();
     });
   });
-  return it('should only send packets when load is acceptable', (done) => {
+  it('should only send packets when load is acceptable', (done) => {
     const expected = [
       'LOAD 2',
       'LOAD 1',
@@ -44,7 +44,7 @@ describe('Throttle component', () => {
       load.send(number);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     };
     out.on('begingroup', (group) => received.push(`< ${group}`));
     out.on('data', (data) => {
@@ -55,13 +55,13 @@ describe('Throttle component', () => {
         return;
       }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
-    out.on('endgroup', (group) => {
+    out.on('endgroup', () => {
       received.push('>');
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
     max.send(2);
     setLoad(2);
@@ -70,6 +70,6 @@ describe('Throttle component', () => {
     ins.endGroup('bar');
     ins.send(2);
     ins.send(3);
-    return setLoad(1);
+    setLoad(1);
   });
 });

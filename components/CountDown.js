@@ -1,14 +1,8 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'count down from particular number, by default 1, and \
-send an empty IP when it hits 0';
+  c.description = 'count down from particular number, by default 1, and send an empty IP when it hits 0';
   c.inPorts.add('in', {
     datatype: 'bang',
     description: 'IPs to decrease the count down',
@@ -34,9 +28,9 @@ send an empty IP when it hits 0';
     description: 'Number of packets received in this cycle',
   });
   c.received = 0;
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     c.received = 0;
-    return callback();
+    callback();
   };
   return c.process((input, output) => {
     let count; let
@@ -55,12 +49,12 @@ send an empty IP when it hits 0';
       repeat = true;
     }
     input.getData('in');
-    c.received++;
+    c.received += 1;
     output.send({ count: c.received });
     if (c.received === count) {
       output.send({ out: new noflo.IP('data', null) });
       if (repeat) { c.received = 0; }
     }
-    return output.done();
+    output.done();
   });
 };

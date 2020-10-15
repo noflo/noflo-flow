@@ -1,15 +1,8 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Like \'core/Merge\', but merge up to a specified \
-number of streams.';
+  c.description = 'Like \'core/Merge\', but merge up to a specified number of streams.';
   c.inPorts.add('in', {
     datatype: 'all',
     description: 'IP to merge',
@@ -23,7 +16,7 @@ number of streams.';
     { datatype: 'all' });
 
   c.received = 0;
-  c.tearDown = function (callback) {
+  c.tearDown = (callback) => {
     c.received = 0;
     return callback();
   };
@@ -31,26 +24,25 @@ number of streams.';
   c.forwardBrackets = {};
 
   return c.process((input, output) => {
-    let packet; let
-      threshold;
     if (!input.hasStream('in')) { return; }
     if (input.attached('threshold') && !input.hasData('threshold')) { return; }
+    let threshold = 1;
     if (input.hasData('threshold')) {
       threshold = input.getData('threshold');
-    } else {
-      threshold = 1;
     }
     const packets = input.getStream('in');
     if (c.received < threshold) {
       // We can still send
-      for (packet of Array.from(packets)) {
+      packets.forEach((packet) => {
         output.send({ out: packet });
-      }
+      });
     } else {
       // Over threshold, drop packets
-      for (packet of Array.from(packets)) { packet.drop(); }
+      packets.forEach((packet) => {
+        packet.drop();
+      });
     }
-    c.received++;
-    return output.done();
+    c.received += 1;
+    output.done();
   });
 };

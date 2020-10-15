@@ -1,16 +1,9 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
   c.icon = 'expand';
-  c.description = 'Like core/Split, expect the last port gets forwarded \
-packets first';
+  c.description = 'Like core/Split, expect the last port gets forwarded packets first';
   c.inPorts.add('in',
     { datatype: 'all' });
   c.outPorts.add('out', {
@@ -23,7 +16,7 @@ packets first';
     const packet = input.get('in');
     const attached = c.outPorts.out.listAttached();
     attached.reverse();
-    for (const idx of Array.from(attached)) {
+    attached.forEach((idx) => {
       output.send({
         out: new noflo.IP(packet.type, packet.data, {
           index: idx,
@@ -32,7 +25,7 @@ packets first';
           clonable: packet.clonable,
         }),
       });
-    }
-    return output.done();
+    });
+    output.done();
   });
 };

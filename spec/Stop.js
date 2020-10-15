@@ -1,8 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 describe('Stop component', () => {
   let c = null;
   let ready = null;
@@ -11,26 +6,29 @@ describe('Stop component', () => {
   before(function (done) {
     this.timeout(6000);
     const loader = new noflo.ComponentLoader(baseDir);
-    return loader.load('flow/Stop', (err, instance) => {
-      if (err) { return done(err); }
+    loader.load('flow/Stop', (err, instance) => {
+      if (err) {
+        done(err);
+        return;
+      }
       c = instance;
       ready = noflo.internalSocket.createSocket();
       ins = noflo.internalSocket.createSocket();
       c.inPorts.ready.attach(ready);
       c.inPorts.in.attach(ins);
-      return done();
+      done();
     });
   });
   beforeEach(() => {
     out = noflo.internalSocket.createSocket();
-    return c.outPorts.out.attach(out);
+    c.outPorts.out.attach(out);
   });
   afterEach(() => {
     c.outPorts.out.detach(out);
-    return out = null;
+    out = null;
   });
 
-  return describe('with a count or 3 and some connections', () => it('should merge packets from first three connections', (done) => {
+  describe('with a count or 3 and some connections', () => it('should merge packets from first three connections', (done) => {
     const expected = [
       'DATA 1',
       'DATA 2',
@@ -41,14 +39,14 @@ describe('Stop component', () => {
 
     out.on('begingroup', (grp) => {
       chai.expect(started, 'should not receive before allowed').to.equal(true);
-      return received.push(`< ${grp}`);
+      received.push(`< ${grp}`);
     });
     out.on('data', (data) => {
       chai.expect(started, 'should not receive before allowed').to.equal(true);
       received.push(`DATA ${data}`);
       if (received.length !== expected.length) { return; }
       chai.expect(received).to.eql(expected);
-      return done();
+      done();
     });
     out.on('endgroup', () => received.push('>'));
 
@@ -60,6 +58,6 @@ describe('Stop component', () => {
     ready.connect();
     started = true;
     ready.send(true);
-    return ready.disconnect();
+    ready.disconnect();
   }));
 });

@@ -1,14 +1,14 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+function clear(c) {
+  if (!c.timeout) { return; }
+  clearTimeout(c.timeout.timeout);
+  c.timeout.ctx.deactivate();
+}
+
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Collect packets and send them when input stops after a given \
-timeout';
+  c.description = 'Collect packets and send them when input stops after a given timeout';
   c.inPorts.add('in', {
     datatype: 'all',
     description: 'IPs to collect until a timeout',
@@ -24,28 +24,27 @@ timeout';
     description: 'IPs collected until the timeout',
   });
   c.timeout = null;
-  const clear = function () {
-    if (!c.timeout) { return; }
-    clearTimeout(c.timeout.timeout);
-    return c.timeout.ctx.deactivate();
-  };
-  c.tearDown = function (callback) {
-    clear();
+  c.tearDown = (callback) => {
+    clear(c);
     return callback();
   };
   return c.process((input, output, context) => {
     let timeout;
-    if (!input.hasData('in')) { return; }
-    if (input.attached('timeout').length && !input.hasData('timeout')) { return; }
+    if (!input.hasData('in')) {
+      return;
+    }
+    if (input.attached('timeout').length && !input.hasData('timeout')) {
+      return;
+    }
     if (input.hasData('timeout')) {
-      timeout = parseInt(input.getData('timeout'));
+      timeout = parseInt(input.getData('timeout'), 10);
     } else {
       timeout = 300;
     }
 
-    clear();
+    clear(c);
 
-    return c.timeout = {
+    c.timeout = {
       ctx: context,
       timeout: setTimeout(() => {
         while (input.hasData('in')) {

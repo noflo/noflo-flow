@@ -1,16 +1,8 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 const noflo = require('noflo');
 
-exports.getComponent = function () {
+exports.getComponent = () => {
   const c = new noflo.Component();
-  c.description = 'Send packets in to outport indexes in reverse order \
-when matching number of inport indexes have received data to attached \
-outports';
+  c.description = 'Send packets in to outport indexes in reverse order when matching number of inport indexes have received data to attached outports';
   c.inPorts.add('in', {
     datatype: 'all',
     addressable: true,
@@ -31,23 +23,23 @@ outports';
     }
     if (indexesWithStreams.length < expectedStreams) { return; }
     const streams = [];
-    for (const idx of Array.from(indexesWithStreams)) {
+    indexesWithStreams.forEach((idx) => {
       streams.push(input.getStream(['in', idx]));
-    }
+    });
     streams.reverse();
     attached.reverse();
-    for (const outIdx of Array.from(attached)) {
-      if (!streams.length) { continue; }
+    attached.forEach((outIdx) => {
+      if (!streams.length) { return; }
       const stream = streams.shift();
-      for (const packet of Array.from(stream)) {
+      stream.forEach((packet) => {
         output.send(new noflo.IP(packet.type, packet.data, {
           index: outIdx,
           datatype: packet.datatype,
           schema: packet.schema,
           clonable: packet.clonable,
         }));
-      }
-    }
-    return output.done();
+      });
+    });
+    output.done();
   });
 };
