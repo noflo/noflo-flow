@@ -11,5 +11,7 @@ incorporate as soon as time allows.
 
 ## Changes
 
+* 0.8.0 (October 15 2020)
+  - Ported from CoffeeScript to modern ES6
 * 0.7.0 (November 17 2017)
   - Changed `All` and `Race` components to always send results as arrays, regardless whether there is one or many
